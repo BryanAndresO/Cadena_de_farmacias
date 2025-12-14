@@ -1,0 +1,91 @@
+version: '3.8'
+services:
+  micro_catalogo:
+    build: ./micro_Catalogo
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://catalogo-db:3306/catalogo
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - catalogo-db
+  catalogo-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=catalogo
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "33061:3306"
+
+  micro_sucursal:
+    build: ./micro_Sucursal
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://sucursal-db:3306/sucursal
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - sucursal-db
+  sucursal-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=sucursal
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "33062:3306"
+
+  micro_cliente:
+    build: ./micro_Cliente
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://cliente-db:3306/cliente
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - cliente-db
+  cliente-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=cliente
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "33063:3306"
+
+  micro_ventas:
+    build: ./micro_Ventas
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ventas-db:3306/ventas
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - ventas-db
+  ventas-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=ventas
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "33064:3306"
+
+  micro_reporte:
+    build: ./micro_Reporte
+    ports:
+      - "8085:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://reporte-db:3306/reporte
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - reporte-db
+  reporte-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=reporte
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "33065:3306"
