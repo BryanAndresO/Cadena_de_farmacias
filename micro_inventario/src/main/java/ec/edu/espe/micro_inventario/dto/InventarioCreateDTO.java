@@ -3,9 +3,7 @@ package ec.edu.espe.micro_inventario.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class InventarioDTO {
-
-    private Long id;
+public class InventarioCreateDTO {
 
     @NotNull(message = "El ID de la sucursal es obligatorio")
     private Long sucursalID;
@@ -21,11 +19,10 @@ public class InventarioDTO {
     private Integer stockMinimo;
 
     // Constructors
-    public InventarioDTO() {
+    public InventarioCreateDTO() {
     }
 
-    public InventarioDTO(Long id, Long sucursalID, String productoID, Integer stock, Integer stockMinimo) {
-        this.id = id;
+    public InventarioCreateDTO(Long sucursalID, String productoID, Integer stock, Integer stockMinimo) {
         this.sucursalID = sucursalID;
         this.productoID = productoID;
         this.stock = stock;
@@ -33,14 +30,6 @@ public class InventarioDTO {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getSucursalID() {
         return sucursalID;
     }
