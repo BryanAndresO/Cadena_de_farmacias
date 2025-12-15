@@ -1,38 +1,32 @@
-package ec.edu.espe.micro_inventario.dto;
+package ec.edu.espe.micro_inventario.model;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 
-public class InventarioDTO {
+@Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"sucursal_id", "producto_id"}
+        )
+)
+public class Inventario {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "El ID de la sucursal es obligatorio")
+    @Column(name = "sucursal_id", nullable = false)
     private Long sucursalID;
 
-    @NotNull(message = "El ID del producto es obligatorio")
+    @Column(name = "producto_id", nullable = false)
     private String productoID;
 
-    @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0, message = "El stock no puede ser negativo")
+    @Column(nullable = false)
     private Integer stock;
 
-    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
     private Integer stockMinimo;
 
-    // Constructors
-    public InventarioDTO() {
-    }
+    //Geters and Setters
 
-    public InventarioDTO(Long id, Long sucursalID, String productoID, Integer stock, Integer stockMinimo) {
-        this.id = id;
-        this.sucursalID = sucursalID;
-        this.productoID = productoID;
-        this.stock = stock;
-        this.stockMinimo = stockMinimo;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
