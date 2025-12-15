@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  micro_ventas:
+    build: .
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ventas-db:3306/ventasdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - ventas-db
+    networks:
+      - red-microservicios
+
+  ventas-db:
+    image: mysql:8.0
+    container_name: mysql-ventas
+    environment:
+      - MYSQL_DATABASE=ventasdb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_ventas_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql_ventas_data:
+
+networks:
+  red-microservicios:
+    driver: bridge

@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  micro_reporte:
+    build: .
+    ports:
+      - "8085:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://reporte-db:3306/reportesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - reporte-db
+    networks:
+      - red-microservicios
+
+  reporte-db:
+    image: mysql:8.0
+    container_name: mysql-reporte
+    environment:
+      - MYSQL_DATABASE=reportesdb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_reporte_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql_reporte_data:
+
+networks:
+  red-microservicios:
+    driver: bridge
