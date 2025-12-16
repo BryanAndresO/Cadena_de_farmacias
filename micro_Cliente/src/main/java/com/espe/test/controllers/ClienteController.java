@@ -16,20 +16,20 @@ public class ClienteController {
     private ClienteService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<Cliente>> listar(){
+    public ResponseEntity<List<Cliente>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> crear(@RequestBody Cliente cliente){
-        Cliente clienteDB=service.guardar(cliente);
+    public ResponseEntity<?> crear(@jakarta.validation.Valid @RequestBody Cliente cliente) {
+        Cliente clienteDB = service.guardar(cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteDB);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Cliente cliente, @PathVariable Long id){
+    public ResponseEntity<?> editar(@jakarta.validation.Valid @RequestBody Cliente cliente, @PathVariable Long id) {
         Optional<Cliente> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         Cliente clienteDB = o.get();
@@ -42,9 +42,9 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<Cliente> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.eliminar(id);

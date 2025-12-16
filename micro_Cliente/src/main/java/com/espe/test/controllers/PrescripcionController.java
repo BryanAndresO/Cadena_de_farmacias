@@ -16,20 +16,21 @@ public class PrescripcionController {
     private PrescripcionService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<Prescripcion>> listar(){
+    public ResponseEntity<List<Prescripcion>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> crear(@RequestBody Prescripcion prescripcion){
-        Prescripcion prescripcionDB=service.guardar(prescripcion);
+    public ResponseEntity<?> crear(@jakarta.validation.Valid @RequestBody Prescripcion prescripcion) {
+        Prescripcion prescripcionDB = service.guardar(prescripcion);
         return ResponseEntity.status(HttpStatus.CREATED).body(prescripcionDB);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Prescripcion prescripcion, @PathVariable Long id){
+    public ResponseEntity<?> editar(@jakarta.validation.Valid @RequestBody Prescripcion prescripcion,
+            @PathVariable Long id) {
         Optional<Prescripcion> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         Prescripcion prescripcionDB = o.get();
@@ -41,9 +42,9 @@ public class PrescripcionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<Prescripcion> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.eliminar(id);

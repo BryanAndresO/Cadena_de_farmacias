@@ -16,20 +16,20 @@ public class SucursalController {
     private SucursalService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<Sucursal>> listar(){
+    public ResponseEntity<List<Sucursal>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> crear(@RequestBody Sucursal sucursal){
-        Sucursal sucursalDB=service.guardar(sucursal);
+    public ResponseEntity<?> crear(@jakarta.validation.Valid @RequestBody Sucursal sucursal) {
+        Sucursal sucursalDB = service.guardar(sucursal);
         return ResponseEntity.status(HttpStatus.CREATED).body(sucursalDB);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Sucursal sucursal, @PathVariable Long id){
+    public ResponseEntity<?> editar(@jakarta.validation.Valid @RequestBody Sucursal sucursal, @PathVariable Long id) {
         Optional<Sucursal> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         Sucursal sucursalDB = o.get();
@@ -41,9 +41,9 @@ public class SucursalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<Sucursal> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.eliminar(id);

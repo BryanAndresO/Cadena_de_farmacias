@@ -16,20 +16,21 @@ public class DetalleVentaController {
     private DetalleVentaService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<DetalleVenta>> listar(){
+    public ResponseEntity<List<DetalleVenta>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> crear(@RequestBody DetalleVenta detalleVenta){
-        DetalleVenta detalleVentaDB=service.guardar(detalleVenta);
+    public ResponseEntity<?> crear(@jakarta.validation.Valid @RequestBody DetalleVenta detalleVenta) {
+        DetalleVenta detalleVentaDB = service.guardar(detalleVenta);
         return ResponseEntity.status(HttpStatus.CREATED).body(detalleVentaDB);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody DetalleVenta detalleVenta, @PathVariable Long id){
+    public ResponseEntity<?> editar(@jakarta.validation.Valid @RequestBody DetalleVenta detalleVenta,
+            @PathVariable Long id) {
         Optional<DetalleVenta> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         DetalleVenta detalleVentaDB = o.get();
@@ -41,9 +42,9 @@ public class DetalleVentaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<DetalleVenta> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.eliminar(id);

@@ -8,9 +8,16 @@ public class Sucursal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @jakarta.validation.constraints.NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
+    @jakarta.validation.constraints.NotBlank(message = "La ciudad es obligatoria")
     private String ciudad;
+
+    @jakarta.validation.constraints.NotBlank(message = "La dirección es obligatoria")
     private String direccion;
+
+    @jakarta.validation.constraints.NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
 
     public Long getId() {

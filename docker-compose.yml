@@ -99,3 +99,23 @@ services:
       - MYSQL_PASSWORD=abcd
     ports:
       - "3313:3306"
+
+  micro_inventario:
+    build: ./micro_inventario
+    ports:
+      - "8086:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3314/inventariodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - inventario-db
+  inventario-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=inventariodb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3314:3306"

@@ -8,10 +8,21 @@ public class Medicamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @jakarta.validation.constraints.NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
     private String descripcion;
+
+    @jakarta.validation.constraints.NotBlank(message = "El laboratorio es obligatorio")
     private String laboratorio;
+
+    @jakarta.validation.constraints.NotNull(message = "El precio es obligatorio")
+    @jakarta.validation.constraints.Positive(message = "El precio debe ser mayor a 0")
     private Double precio;
+
+    @jakarta.validation.constraints.NotNull(message = "El stock es obligatorio")
+    @jakarta.validation.constraints.Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
     public Long getId() {

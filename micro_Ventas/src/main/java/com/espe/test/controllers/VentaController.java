@@ -16,20 +16,20 @@ public class VentaController {
     private VentaService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<Venta>> listar(){
+    public ResponseEntity<List<Venta>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> crear(@RequestBody Venta venta){
-        Venta ventaDB=service.guardar(venta);
+    public ResponseEntity<?> crear(@jakarta.validation.Valid @RequestBody Venta venta) {
+        Venta ventaDB = service.guardar(venta);
         return ResponseEntity.status(HttpStatus.CREATED).body(ventaDB);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Venta venta, @PathVariable Long id){
+    public ResponseEntity<?> editar(@jakarta.validation.Valid @RequestBody Venta venta, @PathVariable Long id) {
         Optional<Venta> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         Venta ventaDB = o.get();
@@ -41,9 +41,9 @@ public class VentaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<Venta> o = service.buscarPorID(id);
-        if(o.isEmpty()){
+        if (o.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         service.eliminar(id);
