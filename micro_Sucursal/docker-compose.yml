@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  micro_sucursal:
+    build: .
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://sucursal-db:3306/sucursalesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - sucursal-db
+    networks:
+      - red-microservicios
+
+  sucursal-db:
+    image: mysql:8.0
+    container_name: mysql-sucursal
+    environment:
+      - MYSQL_DATABASE=sucursalesdb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_sucursal_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql_sucursal_data:
+
+networks:
+  red-microservicios:
+    driver: bridge

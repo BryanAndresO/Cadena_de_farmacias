@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  micro_catalogo:
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://catalogo-db:3306/catalogodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - catalogo-db
+    networks:
+      - red-microservicios
+
+  catalogo-db:
+    image: mysql:8.0
+    container_name: mysql-catalogo
+    environment:
+      - MYSQL_DATABASE=catalogodb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_catalogo_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql_catalogo_data:
+
+networks:
+  red-microservicios:
+    driver: bridge

@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  micro_cliente:
+    build: .
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://cliente-db:3306/clientesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=AppRoot
+      - SPRING_DATASOURCE_PASSWORD=abcd
+    depends_on:
+      - cliente-db
+    networks:
+      - red-microservicios
+
+  cliente-db:
+    image: mysql:8.0
+    container_name: mysql-cliente
+    environment:
+      - MYSQL_DATABASE=clientesdb
+      - MYSQL_ROOT_PASSWORD=abcd
+      - MYSQL_USER=AppRoot
+      - MYSQL_PASSWORD=abcd
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_cliente_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql_cliente_data:
+
+networks:
+  red-microservicios:
+    driver: bridge
