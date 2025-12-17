@@ -1,0 +1,51 @@
+package com.espe.reporte.dtos;
+
+import java.io.Serializable;
+
+public class ReporteInventarioDTO implements Serializable {
+    private Long id;
+    private String fecha;
+    private Long sucursalId;
+    private Long medicamentoId;
+    private Integer stock;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
+    public Long getSucursalId() {
+        return sucursalId;
+    }
+
+    public void setSucursalId(Long sucursalId) {
+        this.sucursalId = sucursalId;
+    }
+
+    public Long getMedicamentoId() {
+        return medicamentoId;
+    }
+
+    public void setMedicamentoId(Long medicamentoId) {
+        this.medicamentoId = medicamentoId;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+}

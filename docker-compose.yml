@@ -1,0 +1,270 @@
+version: '3.8'
+
+services:
+  # ==================== DATABASES ====================
+
+  catalogo-db:
+    image: mysql:8.0
+    container_name: mysql-catalogo
+    environment:
+      MYSQL_DATABASE: catalogodb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_catalogo_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sucursal-db:
+    image: mysql:8.0
+    container_name: mysql-sucursal
+    environment:
+      MYSQL_DATABASE: sucursalesdb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_sucursal_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cliente-db:
+    image: mysql:8.0
+    container_name: mysql-cliente
+    environment:
+      MYSQL_DATABASE: clientesdb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_cliente_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ventas-db:
+    image: mysql:8.0
+    container_name: mysql-ventas
+    environment:
+      MYSQL_DATABASE: ventasdb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_ventas_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  reporte-db:
+    image: mysql:8.0
+    container_name: mysql-reporte
+    environment:
+      MYSQL_DATABASE: reportesdb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_reporte_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  inventario-db:
+    image: mysql:8.0
+    container_name: mysql-inventario
+    environment:
+      MYSQL_DATABASE: inventariodb
+      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_USER: AppRoot
+      MYSQL_PASSWORD: abcd
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_inventario_data:/var/lib/mysql
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== MICROSERVICES ====================
+
+  micro-catalogo:
+    build:
+      context: ./micro_Catalogo
+      dockerfile: Dockerfile
+    container_name: micro-catalogo
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://catalogo-db:3306/catalogodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      catalogo-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  micro-sucursal:
+    build:
+      context: ./micro_Sucursal
+      dockerfile: Dockerfile
+    container_name: micro-sucursal
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://sucursal-db:3306/sucursalesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      sucursal-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  micro-cliente:
+    build:
+      context: ./micro_Cliente
+      dockerfile: Dockerfile
+    container_name: micro-cliente
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://cliente-db:3306/clientesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      cliente-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  micro-ventas:
+    build:
+      context: ./micro_Ventas
+      dockerfile: Dockerfile
+    container_name: micro-ventas
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://ventas-db:3306/ventasdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      ventas-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  micro-reporte:
+    build:
+      context: ./micro_Reporte
+      dockerfile: Dockerfile
+    container_name: micro-reporte
+    ports:
+      - "8085:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://reporte-db:3306/reportesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      reporte-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  micro-inventario:
+    build:
+      context: ./micro_inventario
+      dockerfile: Dockerfile
+    container_name: micro-inventario
+    ports:
+      - "8086:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://inventario-db:3306/inventariodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: AppRoot
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      inventario-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  # ==================== FRONTEND ====================
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - micro-catalogo
+      - micro-sucursal
+      - micro-cliente
+      - micro-ventas
+      - micro-reporte
+      - micro-inventario
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+# ==================== NETWORKS ====================
+
+networks:
+  red-microservicios:
+    driver: bridge
+
+# ==================== VOLUMES ====================
+
+volumes:
+  mysql_catalogo_data:
+  mysql_sucursal_data:
+  mysql_cliente_data:
+  mysql_ventas_data:
+  mysql_reporte_data:
+  mysql_inventario_data:

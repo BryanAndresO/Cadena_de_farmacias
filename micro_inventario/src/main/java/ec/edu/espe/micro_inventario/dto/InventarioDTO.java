@@ -1,38 +1,15 @@
 package ec.edu.espe.micro_inventario.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
 
-public class InventarioDTO {
+public class InventarioDTO implements Serializable {
 
     private Long id;
-
-    @NotNull(message = "El ID de la sucursal es obligatorio")
-    private Long sucursalID;
-
-    @NotNull(message = "El ID del producto es obligatorio")
-    private String productoID;
-
-    @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0, message = "El stock no puede ser negativo")
-    private Integer stock;
-
-    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
+    private Long sucursalId;
+    private String productoId;
+    private Integer cantidad;
     private Integer stockMinimo;
 
-    // Constructors
-    public InventarioDTO() {
-    }
-
-    public InventarioDTO(Long id, Long sucursalID, String productoID, Integer stock, Integer stockMinimo) {
-        this.id = id;
-        this.sucursalID = sucursalID;
-        this.productoID = productoID;
-        this.stock = stock;
-        this.stockMinimo = stockMinimo;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -41,28 +18,28 @@ public class InventarioDTO {
         this.id = id;
     }
 
-    public Long getSucursalID() {
-        return sucursalID;
+    public Long getSucursalId() {
+        return sucursalId;
     }
 
-    public void setSucursalID(Long sucursalID) {
-        this.sucursalID = sucursalID;
+    public void setSucursalId(Long sucursalId) {
+        this.sucursalId = sucursalId;
     }
 
-    public String getProductoID() {
-        return productoID;
+    public String getProductoId() {
+        return productoId;
     }
 
-    public void setProductoID(String productoID) {
-        this.productoID = productoID;
+    public void setProductoId(String productoId) {
+        this.productoId = productoId;
     }
 
-    public Integer getStock() {
-        return stock;
+    public Integer getCantidad() {
+        return cantidad;
     }
 
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 
     public Integer getStockMinimo() {
