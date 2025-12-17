@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { apiCatalogo, apiVentas, apiCliente } from '../services/api';
 
 // Updated Components for Dashboard
 const DashboardCard = ({ title, value, icon, color }) => (
@@ -28,6 +29,44 @@ const QuickAction = ({ to, title, description, icon }) => (
 );
 
 const Dashboard = () => {
+    const [stats, setStats] = React.useState({
+        sales: 0,
+        products: 0,
+        clients: 0,
+        alerts: 0
+    });
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch basic lists to calculate stats
+                const [salesRes, productsRes, clientsRes] = await Promise.all([
+                    apiVentas.get('/ventas/'),
+                    apiCatalogo.get('/medicamentos'),
+                    apiCliente.get('/clientes/')
+                ]);
+
+                // Calculate totals
+                const totalSales = salesRes.data.reduce((acc, curr) => acc + curr.total, 0);
+                const totalProducts = productsRes.data.length;
+                const totalClients = clientsRes.data.length;
+                const lowStockAlerts = productsRes.data.filter(p => p.stock < 10).length;
+
+                setStats({
+                    sales: totalSales,
+                    products: totalProducts,
+                    clients: totalClients,
+                    alerts: lowStockAlerts
+                });
+
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <div className="slide-up">
             <header className="mb-8 flex justify-between items-end border-b border-slate-200 pb-6">
@@ -35,15 +74,35 @@ const Dashboard = () => {
                     <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dashboard General</h1>
                     <p className="text-slate-500 mt-1">Visión general del rendimiento de FarmaciaSys</p>
                 </div>
-                <div className="text-sm text-slate-400">Ultima actualización: Hoy, 12:00 PM</div>
+                <div className="text-sm text-slate-400">Ultima actualización: {new Date().toLocaleTimeString()}</div>
             </header>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <DashboardCard title="Ventas Totales" value="$12,450" icon="💵" color="text-emerald-600 bg-emerald-50" />
-                <DashboardCard title="Productos Activos" value="1,452" icon="📦" color="text-blue-600 bg-blue-50" />
-                <DashboardCard title="Clientes Nuevos" value="28" icon="👥" color="text-indigo-600 bg-indigo-50" />
-                <DashboardCard title="Alertas Stock" value="5" icon="⚠️" color="text-amber-600 bg-amber-50" />
+                <DashboardCard
+                    title="Ventas Totales"
+                    value={`$${stats.sales.toFixed(2)}`}
+                    icon="💵"
+                    color="text-emerald-600 bg-emerald-50"
+                />
+                <DashboardCard
+                    title="Productos Activos"
+                    value={stats.products}
+                    icon="📦"
+                    color="text-blue-600 bg-blue-50"
+                />
+                <DashboardCard
+                    title="Clientes Nuevos"
+                    value={stats.clients}
+                    icon="👥"
+                    color="text-indigo-600 bg-indigo-50"
+                />
+                <DashboardCard
+                    title="Alertas Stock"
+                    value={stats.alerts}
+                    icon="⚠️"
+                    color="text-amber-600 bg-amber-50"
+                />
             </div>
 
             <h2 className="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">

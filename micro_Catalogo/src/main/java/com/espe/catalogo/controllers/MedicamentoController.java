@@ -24,6 +24,13 @@ public class MedicamentoController {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<MedicamentoDTO> buscar(@PathVariable Long id) {
+        return service.buscarPorID(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontro el medicamento con el id: " + id));
+    }
+
     @PostMapping
     public ResponseEntity<MedicamentoDTO> crear(@Valid @RequestBody MedicamentoDTO medicamentoDTO) {
         MedicamentoDTO medicamentoDB = service.guardar(medicamentoDTO);

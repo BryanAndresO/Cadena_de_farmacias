@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 const BranchForm = ({ branch, onSave, onCancel }) => {
     const [form, setForm] = useState({
         nombre: '',
-        ciudad: ''
+        ciudad: '',
+        direccion: '',
+        telefono: ''
     });
 
     useEffect(() => {
@@ -43,6 +45,26 @@ const BranchForm = ({ branch, onSave, onCancel }) => {
                         <input
                             name="ciudad"
                             value={form.ciudad}
+                            onChange={handleChange}
+                            className="input-field"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Dirección</label>
+                        <input
+                            name="direccion"
+                            value={form.direccion}
+                            onChange={handleChange}
+                            className="input-field"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Teléfono</label>
+                        <input
+                            name="telefono"
+                            value={form.telefono}
                             onChange={handleChange}
                             className="input-field"
                             required

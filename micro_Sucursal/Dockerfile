@@ -1,14 +1,13 @@
-FROM eclipse-temurin:17-jdk-alpine
-
-
-# Carpeta donde se ejecutará la app dentro del contenedor
+# Build stage
+FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copiar el JAR generado a la imagen Docker
-COPY target/test-0.0.1-SNAPSHOT.jar app.jar
-
-# Exponer el puerto donde corre Spring Boot
+# Run stage
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando para ejecutar la API
 ENTRYPOINT ["java", "-jar", "app.jar"]

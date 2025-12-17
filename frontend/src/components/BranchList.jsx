@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiSucursal, apiInventario } from '../services/api';
 import BranchForm from './BranchForm';
+import StockAssignmentForm from './StockAssignmentForm';
 
 const BranchList = () => {
     const [branches, setBranches] = useState([]);
@@ -11,6 +12,10 @@ const BranchList = () => {
     // CRUD State
     const [showForm, setShowForm] = useState(false);
     const [editingBranch, setEditingBranch] = useState(null);
+
+    // Stock Assignment State
+    const [showStockForm, setShowStockForm] = useState(false);
+    const [editingInventory, setEditingInventory] = useState(null);
 
     useEffect(() => {
         fetchBranches();
@@ -83,6 +88,54 @@ const BranchList = () => {
         }
     };
 
+    const handleAssignStock = async (stockData) => {
+        try {
+            await apiInventario.post('/', stockData);
+            setShowStockForm(false);
+            fetchInventory(stockData.sucursalID);
+            alert('Stock asignado correctamente');
+        } catch (err) {
+            console.error(err);
+            const msg = err.response?.data?.message || err.message || 'Error al asignar stock';
+            alert('Error: ' + msg);
+        }
+    };
+
+    const handleEditInventory = (item) => {
+        setEditingInventory(item);
+        setShowStockForm(true);
+    };
+
+    const handleDeleteInventory = async (id) => {
+        if (window.confirm('¿Eliminar este producto del inventario de la sucursal?')) {
+            try {
+                await apiInventario.delete(`/${id}`);
+                fetchInventory(selectedBranch.id);
+                alert('Producto eliminado del inventario');
+            } catch (err) {
+                console.error(err);
+                alert('Error al eliminar producto');
+            }
+        }
+    };
+
+    const handleUpdateInventory = async (stockData) => {
+        try {
+            await apiInventario.put(`/${editingInventory.id}`, {
+                stock: parseInt(stockData.stock),
+                stockMinimo: parseInt(stockData.stockMinimo)
+            });
+            setShowStockForm(false);
+            setEditingInventory(null);
+            fetchInventory(selectedBranch.id);
+            alert('Inventario actualizado correctamente');
+        } catch (err) {
+            console.error(err);
+            const msg = err.response?.data?.message || err.message || 'Error al actualizar inventario';
+            alert('Error: ' + msg);
+        }
+    };
+
     if (loading && !branches.length) return <div className="p-8 text-center">Cargando sistema de sucursales...</div>;
 
     return (
@@ -134,7 +187,12 @@ const BranchList = () => {
                                 <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                     📦 Inventario: <span className="text-indigo-600">{selectedBranch.nombre}</span>
                                 </h3>
-                                {/* Future: Add 'Adjust Stock' button here */}
+                                <button
+                                    onClick={() => setShowStockForm(true)}
+                                    className="btn-secondary text-sm py-1"
+                                >
+                                    + Asignar Producto
+                                </button>
                             </div>
 
                             <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -143,7 +201,9 @@ const BranchList = () => {
                                         <tr>
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Producto ID</th>
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Stock Disponible</th>
+                                            <th className="p-3 font-semibold text-gray-600 text-sm">Stock Mínimo</th>
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Estado</th>
+                                            <th className="p-3 font-semibold text-gray-600 text-sm">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -151,15 +211,20 @@ const BranchList = () => {
                                             <tr key={item.id} className="hover:bg-gray-50">
                                                 <td className="p-3 text-gray-700">#{item.productoId}</td>
                                                 <td className="p-3 font-mono font-bold text-indigo-600">{item.cantidad}</td>
+                                                <td className="p-3 text-gray-600">{item.stockMinimo || 0}</td>
                                                 <td className="p-3">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.cantidad < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                                        {item.cantidad < 10 ? '🔴 Bajo Stock' : '🟢 Normal'}
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.cantidad < (item.stockMinimo || 10) ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                                        {item.cantidad < (item.stockMinimo || 10) ? '🔴 Bajo Stock' : '🟢 Normal'}
                                                     </span>
+                                                </td>
+                                                <td className="p-3">
+                                                    <button onClick={() => handleEditInventory(item)} className="text-blue-600 hover:text-blue-800 mr-3" title="Editar">✏️</button>
+                                                    <button onClick={() => handleDeleteInventory(item.id)} className="text-red-600 hover:text-red-800" title="Eliminar">🗑️</button>
                                                 </td>
                                             </tr>
                                         )) : (
                                             <tr>
-                                                <td colSpan="3" className="p-8 text-center text-gray-400 italic">
+                                                <td colSpan="6" className="p-8 text-center text-gray-400 italic">
                                                     No hay items registrados en este inventario.
                                                 </td>
                                             </tr>
@@ -182,6 +247,18 @@ const BranchList = () => {
                     branch={editingBranch}
                     onSave={handleSave}
                     onCancel={() => setShowForm(false)}
+                />
+            )}
+
+            {showStockForm && selectedBranch && (
+                <StockAssignmentForm
+                    branchId={selectedBranch.id}
+                    editingItem={editingInventory}
+                    onSave={editingInventory ? handleUpdateInventory : handleAssignStock}
+                    onCancel={() => {
+                        setShowStockForm(false);
+                        setEditingInventory(null);
+                    }}
                 />
             )}
         </div>
