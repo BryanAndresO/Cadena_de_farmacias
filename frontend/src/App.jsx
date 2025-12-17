@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 fixed h-full z-10 hidden md:block">
+      <aside className="w-64 bg-white border-r border-gray-200 fixed h-full z-[9999] shadow-lg md:block">
         <div className="p-6 border-b border-gray-100">
           <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
             FarmaciaSys

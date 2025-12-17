@@ -19,12 +19,12 @@ public class MedicamentoController {
     @Autowired
     private MedicamentoService service;
 
-    @GetMapping("/")
+    @GetMapping({ "", "/" })
     public ResponseEntity<List<MedicamentoDTO>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<MedicamentoDTO> crear(@Valid @RequestBody MedicamentoDTO medicamentoDTO) {
         MedicamentoDTO medicamentoDB = service.guardar(medicamentoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(medicamentoDB);

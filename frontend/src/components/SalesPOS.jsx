@@ -81,105 +81,125 @@ const SalesPOS = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-6">Punto de Venta</h2>
+        <div className="slide-up ">
+            <h2 className="text-3xl font-bold mb-2 text-gray-800">Punto de Venta</h2>
+            <p className="text-gray-500 mb-8">Facturación y registro de ventas</p>
 
-            <div className="grid grid-cols-3 gap-6">
-                {/* Left Column: Selection */}
-                <div className="bg-white p-4 shadow rounded col-span-1">
-                    <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">Sucursal</label>
-                        <select
-                            className="w-full border p-2 rounded"
-                            value={selectedBranch}
-                            onChange={(e) => setSelectedBranch(e.target.value)}
-                        >
-                            <option value="">Seleccione Sucursal</option>
-                            {branches.map(b => (
-                                <option key={b.id} value={b.id}>{b.nombre}</option>
-                            ))}
-                        </select>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Left Column: Selection & Product Catalog (8 cols) */}
+                <div className="lg:col-span-8 space-y-6">
+
+                    {/* Header Controls */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-bold mb-2 text-gray-700">Sucursal</label>
+                            <select
+                                className="input-field"
+                                value={selectedBranch}
+                                onChange={(e) => setSelectedBranch(e.target.value)}
+                            >
+                                <option value="">-- Seleccione Sucursal --</option>
+                                {branches.map(b => (
+                                    <option key={b.id} value={b.id}>{b.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-sm font-bold mb-2 text-gray-700">Cliente</label>
+                            <select
+                                className="input-field"
+                                value={selectedClient}
+                                onChange={(e) => setSelectedClient(e.target.value)}
+                            >
+                                <option value="">-- Seleccione Cliente --</option>
+                                {clients.map(c => (
+                                    <option key={c.id} value={c.id}>{c.nombre} - {c.cedula || 'N/A'}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">Cliente</label>
-                        <select
-                            className="w-full border p-2 rounded"
-                            value={selectedClient}
-                            onChange={(e) => setSelectedClient(e.target.value)}
-                        >
-                            <option value="">Seleccione Cliente</option>
-                            {clients.map(c => (
-                                <option key={c.id} value={c.id}>{c.nombre} - {c.cedula}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="border-t pt-4">
-                        <h3 className="font-bold mb-2">Productos</h3>
-                        <div className="h-64 overflow-y-auto">
+                    {/* Product Grid */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 className="text-lg font-bold mb-4 text-gray-800">Catálogo de Productos</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
                             {products.map(p => (
-                                <div key={p.id} className="flex justify-between items-center p-2 border-b hover:bg-gray-50">
+                                <div key={p.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-gray-50 hover:bg-white flex flex-col justify-between" onClick={() => addToCart(p)}>
                                     <div>
-                                        <div className="font-medium">{p.nombre}</div>
-                                        <div className="text-xs text-gray-500">${p.precio}</div>
+                                        <div className="font-bold text-gray-800">{p.nombre}</div>
+                                        <div className="text-xs text-gray-500 mb-2">{p.laboratorio}</div>
                                     </div>
-                                    <button
-                                        onClick={() => addToCart(p)}
-                                        className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                    >
-                                        +
-                                    </button>
+                                    <div className="flex justify-between items-center mt-2">
+                                        <span className="font-bold text-indigo-600">${p.precio}</span>
+                                        <button className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-700">+</button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Right Column: Cart */}
-                <div className="bg-white p-4 shadow rounded col-span-2">
-                    <h3 className="text-xl font-bold mb-4">Carrito de Compras</h3>
-                    <table className="w-full mb-4">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="text-left pb-2">Producto</th>
-                                <th className="text-center pb-2">Cant</th>
-                                <th className="text-right pb-2">Precio</th>
-                                <th className="text-right pb-2">Subtotal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cart.map(item => (
-                                <tr key={item.id} className="border-b">
-                                    <td className="py-2">{item.nombre}</td>
-                                    <td className="text-center">{item.quantity}</td>
-                                    <td className="text-right">${item.precio}</td>
-                                    <td className="text-right">${(item.precio * item.quantity).toFixed(2)}</td>
-                                    <td className="text-right">
-                                        <button
-                                            onClick={() => removeFromCart(item.id)}
-                                            className="text-red-500 hover:text-red-700"
-                                        >
-                                            x
-                                        </button>
-                                    </td>
-                                </tr>
+                {/* Right Column: Cart (4 cols) */}
+                <div className="lg:col-span-4">
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-4">
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            🛒 Carrito de Compras
+                        </h3>
+
+                        <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto">
+                            {cart.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                                    El carrito está vacío
+                                </div>
+                            ) : cart.map(item => (
+                                <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex-1">
+                                        <div className="font-medium text-sm text-gray-800">{item.nombre}</div>
+                                        <div className="text-xs text-gray-500">${item.precio} x {item.quantity}</div>
+                                    </div>
+                                    <div className="font-bold text-gray-800 mr-3">
+                                        ${(item.precio * item.quantity).toFixed(2)}
+                                    </div>
+                                    <button
+                                        onClick={() => removeFromCart(item.id)}
+                                        className="text-red-400 hover:text-red-600 p-1"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
 
-                    <div className="flex justify-end items-center text-2xl font-bold mb-6">
-                        Total: ${calculateTotal().toFixed(2)}
+                        {/* Summary */}
+                        <div className="border-t border-gray-200 pt-4 space-y-2 mb-6">
+                            <div className="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span>${calculateTotal().toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span>Impuestos (0%)</span>
+                                <span>$0.00</span>
+                            </div>
+                            <div className="flex justify-between text-2xl font-bold text-indigo-700 pt-2">
+                                <span>Total</span>
+                                <span>${calculateTotal().toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleCheckout}
+                            disabled={cart.length === 0 || !selectedClient || !selectedBranch}
+                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl text-lg font-bold hover:shadow-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            Confirmar Venta
+                        </button>
+
+                        {(!selectedClient || !selectedBranch) && (
+                            <p className="text-xs text-center text-red-500 mt-2">
+                                * Debe seleccionar Sucursal y Cliente
+                            </p>
+                        )}
                     </div>
-
-                    <button
-                        onClick={handleCheckout}
-                        disabled={cart.length === 0}
-                        className="w-full bg-green-600 text-white py-3 rounded text-lg font-bold hover:bg-green-700 disabled:bg-gray-400"
-                    >
-                        Confirmar Venta
-                    </button>
                 </div>
             </div>
         </div>

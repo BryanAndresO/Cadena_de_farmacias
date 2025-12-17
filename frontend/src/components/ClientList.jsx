@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { apiCliente } from '../services/api';
+import ClientForm from './ClientForm';
 
 const ClientList = () => {
     const [clients, setClients] = useState([]);
-    const [form, setForm] = useState({ nombre: '', apellido: '', email: '', telefono: '', direccion: '' });
-    const [isEditing, setIsEditing] = useState(false);
-    const [currentId, setCurrentId] = useState(null);
-    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // CRUD State
+    const [showForm, setShowForm] = useState(false);
+    const [editingClient, setEditingClient] = useState(null);
 
     useEffect(() => {
         fetchClients();
@@ -14,109 +17,125 @@ const ClientList = () => {
 
     const fetchClients = async () => {
         try {
-            const response = await apiCliente.get('/');
+            const response = await apiCliente.get('/clientes/');
             setClients(response.data);
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching clients", error);
+            setError('Error al cargar clientes');
+            setLoading(false);
         }
     };
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (isEditing) {
-                await apiCliente.put(`/${currentId}`, form);
-                setMessage('Cliente actualizado correctamente');
-            } else {
-                await apiCliente.post('/', form);
-                setMessage('Cliente creado correctamente');
-            }
-            setForm({ nombre: '', apellido: '', email: '', telefono: '', direccion: '' });
-            setIsEditing(false);
-            setCurrentId(null);
-            fetchClients();
-        } catch (error) {
-            console.error("Error saving client", error);
-            setMessage('Error al guardar cliente');
-        }
+    const handleCreate = () => {
+        setEditingClient(null);
+        setShowForm(true);
     };
 
     const handleEdit = (client) => {
-        setForm(client);
-        setIsEditing(true);
-        setCurrentId(client.id);
+        setEditingClient(client);
+        setShowForm(true);
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('¿Estás seguro de eliminar este cliente?')) {
             try {
-                await apiCliente.delete(`/${id}`);
+                await apiCliente.delete(`/clientes/${id}`);
                 fetchClients();
-                setMessage('Cliente eliminado');
             } catch (error) {
-                console.error("Error deleting client", error);
+                alert('Error al eliminar cliente');
             }
         }
     };
 
+    const handleSave = async (clientData) => {
+        try {
+            if (editingClient) {
+                await apiCliente.put(`/clientes/${editingClient.id}`, clientData);
+            } else {
+                await apiCliente.post('/clientes/', clientData);
+            }
+            setShowForm(false);
+            fetchClients();
+        } catch (error) {
+            alert('Error al guardar cliente');
+            console.error(error);
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center">Cargando clientes...</div>;
+
     return (
-        <div className="glass p-8 slide-up">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Gestión de Clientes</h2>
-
-            {message && (
-                <div className={`p-4 mb-4 rounded-lg text-white ${message.includes('Error') ? 'bg-red-500' : 'bg-green-500'}`}>
-                    {message}
+        <div className="slide-up">
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h2 className="text-3xl font-bold text-gray-800">Gestión de Clientes</h2>
+                    <p className="text-gray-500">Administración de la base de datos de compradores</p>
                 </div>
-            )}
-
-            <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm mb-8">
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} className="input-field" required />
-                    <input name="apellido" placeholder="Apellido" value={form.apellido} onChange={handleChange} className="input-field" required />
-                    <input name="email" placeholder="Email" value={form.email} onChange={handleChange} className="input-field" required />
-                    <input name="telefono" placeholder="Teléfono" value={form.telefono} onChange={handleChange} className="input-field" required />
-                    <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} className="input-field md:col-span-2" required />
-
-                    <button type="submit" className="btn-primary md:col-span-2">
-                        {isEditing ? 'Actualizar Cliente' : 'Guardar Cliente'}
-                    </button>
-                    {isEditing && (
-                        <button type="button" onClick={() => { setIsEditing(false); setForm({ nombre: '', apellido: '', email: '', telefono: '', direccion: '' }); }} className="btn-secondary md:col-span-2">
-                            Cancelar Edición
-                        </button>
-                    )}
-                </form>
+                <button
+                    onClick={handleCreate}
+                    className="btn-primary w-auto flex items-center gap-2"
+                >
+                    <span>+</span> Nuevo Cliente
+                </button>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {clients.map(client => (
-                    <div key={client.id} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1">
+                    <div key={client.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-1">
                         <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-800">{client.nombre} {client.apellido}</h3>
-                                <p className="text-sm text-gray-500">{client.email}</p>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                    {client.nombre?.charAt(0) || '?'}{client.apellido?.charAt(0) || '?'}
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{client.nombre || 'N/A'} {client.apellido || ''}</h3>
+                                    <p className="text-xs text-indigo-600 font-medium">{client.email || 'N/A'}</p>
+                                </div>
                             </div>
-                            <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">ID: {client.id}</div>
+                            <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded">#{client.id}</span>
                         </div>
-                        <div className="space-y-2 text-gray-600 mb-4">
-                            <p className="flex items-center gap-2"><span className="font-medium">Tel:</span> {client.telefono}</p>
-                            <p className="flex items-center gap-2"><span className="font-medium">Dir:</span> {client.direccion}</p>
+
+                        <div className="space-y-2 text-sm text-gray-600 mb-6 bg-gray-50 p-3 rounded-lg">
+                            <div className="flex items-center gap-2">
+                                <span className="w-5 text-center">🆔</span>
+                                <span className="font-medium text-gray-700">{client.cedula}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="w-5 text-center">📞</span>
+                                <span>{client.telefono}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="w-5 text-center">📍</span>
+                                <span className="truncate" title={client.direccion}>{client.direccion}</span>
+                            </div>
                         </div>
-                        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-                            <button onClick={() => handleEdit(client)} className="flex-1 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+
+                        <div className="flex gap-2 border-t border-gray-100 pt-4">
+                            <button
+                                onClick={() => handleEdit(client)}
+                                className="flex-1 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                            >
                                 Editar
                             </button>
-                            <button onClick={() => handleDelete(client.id)} className="flex-1 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <button
+                                onClick={() => handleDelete(client.id)}
+                                className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                            >
                                 Eliminar
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
+
+            {showForm && (
+                <ClientForm
+                    client={editingClient}
+                    onSave={handleSave}
+                    onCancel={() => setShowForm(false)}
+                />
+            )}
         </div>
     );
 };

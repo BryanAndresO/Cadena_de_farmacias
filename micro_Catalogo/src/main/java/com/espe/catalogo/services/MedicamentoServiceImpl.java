@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,7 +20,7 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     @Transactional(readOnly = true)
     public List<MedicamentoDTO> buscarTodos() {
-        return ((List<Medicamento>) repository.findAll()).stream()
+        return repository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -52,9 +51,7 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         dto.setNombre(entity.getNombre());
         dto.setDescripcion(entity.getDescripcion());
         dto.setLaboratorio(entity.getLaboratorio());
-        if (entity.getPrecio() != null) {
-            dto.setPrecio(BigDecimal.valueOf(entity.getPrecio()));
-        }
+        dto.setPrecio(entity.getPrecio());
         dto.setStock(entity.getStock());
         return dto;
     }
@@ -65,9 +62,7 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         entity.setNombre(dto.getNombre());
         entity.setDescripcion(dto.getDescripcion());
         entity.setLaboratorio(dto.getLaboratorio());
-        if (dto.getPrecio() != null) {
-            entity.setPrecio(dto.getPrecio().doubleValue());
-        }
+        entity.setPrecio(dto.getPrecio());
         entity.setStock(dto.getStock());
         return entity;
     }

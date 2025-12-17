@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { apiCatalogo } from '../services/api';
 
-const MedicineForm = ({ onSave, onCancel }) => {
+const MedicineForm = ({ medicine, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         laboratorio: '',
@@ -9,6 +9,19 @@ const MedicineForm = ({ onSave, onCancel }) => {
         precio: '',
         stock: ''
     });
+
+    // Populate form if editing
+    React.useEffect(() => {
+        if (medicine) {
+            setFormData({
+                nombre: medicine.nombre,
+                laboratorio: medicine.laboratorio,
+                descripcion: medicine.descripcion || '',
+                precio: medicine.precio,
+                stock: medicine.stock
+            });
+        }
+    }, [medicine]);
 
     const handleChange = (e) => {
         setFormData({
@@ -20,12 +33,19 @@ const MedicineForm = ({ onSave, onCancel }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await apiCatalogo.post('/medicamentos', {
+            const payload = {
                 ...formData,
                 precio: parseFloat(formData.precio),
                 stock: parseInt(formData.stock)
-            });
-            alert('Medicamento guardado');
+            };
+
+            if (medicine) {
+                await apiCatalogo.put(`/medicamentos/${medicine.id}`, payload);
+                alert('Medicamento actualizado');
+            } else {
+                await apiCatalogo.post('/medicamentos', payload);
+                alert('Medicamento guardado');
+            }
             onSave();
         } catch (err) {
             alert('Error al guardar: ' + (err.response?.data?.message || err.message));
@@ -33,8 +53,8 @@ const MedicineForm = ({ onSave, onCancel }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 className="text-xl font-bold mb-4">Nuevo Medicamento</h3>
+        <div className="bg-white rounded-lg">
+            <h3 className="text-xl font-bold mb-4">{medicine ? 'Editar Medicamento' : 'Nuevo Medicamento'}</h3>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-gray-700">Nombre</label>

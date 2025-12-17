@@ -3,7 +3,6 @@ package com.espe.catalogo.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.math.BigDecimal;
 
 public class MedicamentoDTO {
 
@@ -19,7 +18,7 @@ public class MedicamentoDTO {
 
     @NotNull(message = "El precio es obligatorio")
     @Positive(message = "El precio debe ser mayor a 0")
-    private BigDecimal precio;
+    private Double precio;
 
     @NotNull(message = "El stock es obligatorio")
     @Positive(message = "El stock debe ser mayor a 0")
@@ -57,11 +56,11 @@ public class MedicamentoDTO {
         this.laboratorio = laboratorio;
     }
 
-    public BigDecimal getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(BigDecimal precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
