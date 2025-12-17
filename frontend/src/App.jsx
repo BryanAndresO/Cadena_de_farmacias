@@ -22,24 +22,28 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 fixed h-full z-[9999] shadow-lg md:block">
-        <div className="p-6 border-b border-gray-100">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+      <aside className="w-64 fixed h-full z-40 shadow-xl transition-transform duration-300">
+        <div className="p-6 flex items-center gap-2">
+          {/* Simple Icon Logo */}
+          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">F</span>
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-white m-0">
             FarmaciaSys
           </h1>
         </div>
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-1">
           <SidebarLink to="/" icon="📊" label="Dashboard" />
           <SidebarLink to="/medicines" icon="💊" label="Medicamentos" />
           <SidebarLink to="/branches" icon="🏥" label="Sucursales" />
           <SidebarLink to="/clients" icon="👥" label="Clientes" />
-          <SidebarLink to="/sales" icon="🛒" label="Punto de Venta" />
+          <SidebarLink to="/sales" icon="🛒" label="Terminal POS" />
           <SidebarLink to="/reports" icon="📈" label="Reportes" />
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-8">
+      <main className="flex-1 md:ml-64 p-8 bg-slate-50 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
