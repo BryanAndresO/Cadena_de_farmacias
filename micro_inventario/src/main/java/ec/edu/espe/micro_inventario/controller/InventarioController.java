@@ -90,7 +90,7 @@ public class InventarioController {
     /**
      * POST /api/inventario - Create new inventory record
      */
-    @PostMapping
+    @PostMapping({ "", "/" })
     public ResponseEntity<InventarioDTO> create(@Valid @RequestBody InventarioCreateDTO createDTO) {
         InventarioDTO created = service.create(createDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);

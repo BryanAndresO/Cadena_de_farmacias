@@ -90,7 +90,7 @@ const BranchList = () => {
 
     const handleAssignStock = async (stockData) => {
         try {
-            await apiInventario.post('/', stockData);
+            await apiInventario.post('', stockData);
             setShowStockForm(false);
             fetchInventory(stockData.sucursalID);
             alert('Stock asignado correctamente');
