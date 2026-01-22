@@ -30,6 +30,15 @@ import java.util.UUID;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final com.espe.oauth.service.CustomUserDetailsService userDetailsService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    public SecurityConfig(com.espe.oauth.service.CustomUserDetailsService userDetailsService,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     /**
      * Security filter chain for the Authorization Server endpoints
      */
@@ -62,10 +71,13 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/status").permitAll()
                         .anyRequest().authenticated())
                 // Form login handles the redirect to the login page from the authorization
                 // server filter chain
-                .formLogin(Customizer.withDefaults());
+                .formLogin(form -> form
+                        .defaultSuccessUrl("http://localhost:8080/"))
+                .userDetailsService(userDetailsService);
 
         return http.build();
     }
