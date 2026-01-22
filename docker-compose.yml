@@ -3,6 +3,25 @@ version: '3.8'
 services:
   # ==================== DATABASES ====================
 
+  auth-db:
+    image: postgres:15
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abcd
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - red-microservicios
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   catalogo-db:
     image: mysql:8.0
     container_name: mysql-catalogo
@@ -136,9 +155,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://catalogo-db:3306/catalogodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       catalogo-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
     networks:
       - red-microservicios
     restart: on-failure
@@ -154,9 +176,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://sucursal-db:3306/sucursalesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       sucursal-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
     networks:
       - red-microservicios
     restart: on-failure
@@ -172,9 +197,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://cliente-db:3306/clientesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       cliente-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
     networks:
       - red-microservicios
     restart: on-failure
@@ -190,9 +218,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://ventas-db:3306/ventasdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       ventas-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
     networks:
       - red-microservicios
     restart: on-failure
@@ -208,9 +239,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://reporte-db:3306/reportesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       reporte-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
     networks:
       - red-microservicios
     restart: on-failure
@@ -226,9 +260,52 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://inventario-db:3306/inventariodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
     depends_on:
       inventario-db:
         condition: service_healthy
+      oauth-server:
+        condition: service_started
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  oauth-server:
+    build:
+      context: ./oauth.server
+      dockerfile: Dockerfile
+    container_name: oauth-server
+    ports:
+      - "9000:9000"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: abcd
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - red-microservicios
+    restart: on-failure
+
+  gateway:
+    build:
+      context: ./gateway/gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_SPRING_ISSUER_URI: http://oauth-server:9000
+    depends_on:
+      - oauth-server
+      - micro-catalogo
+      - micro-sucursal
+      - micro-cliente
+      - micro-ventas
+      - micro-reporte
+      - micro-inventario
+      - frontend
     networks:
       - red-microservicios
     restart: on-failure
@@ -240,15 +317,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - micro-catalogo
-      - micro-sucursal
-      - micro-cliente
-      - micro-ventas
-      - micro-reporte
-      - micro-inventario
+    # No external ports - only accessible through Gateway
     networks:
       - red-microservicios
     restart: on-failure
@@ -262,6 +331,7 @@ networks:
 # ==================== VOLUMES ====================
 
 volumes:
+  postgres_auth_data:
   mysql_catalogo_data:
   mysql_sucursal_data:
   mysql_cliente_data:
