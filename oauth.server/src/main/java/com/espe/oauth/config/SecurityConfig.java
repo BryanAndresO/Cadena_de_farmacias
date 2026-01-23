@@ -128,6 +128,8 @@ public class SecurityConfig {
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .issuer("http://oauth-server:9000")
+                .build();
     }
 }

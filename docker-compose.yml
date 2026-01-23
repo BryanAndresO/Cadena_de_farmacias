@@ -261,6 +261,7 @@ services:
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      CATALOGO_SERVICE_URL: http://micro-catalogo:8080
     depends_on:
       inventario-db:
         condition: service_healthy

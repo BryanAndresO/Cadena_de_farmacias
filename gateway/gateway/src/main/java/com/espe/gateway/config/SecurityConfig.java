@@ -17,7 +17,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .anyExchange().authenticated())
                 .oauth2Login(Customizer.withDefaults())
-                .oauth2Client(Customizer.withDefaults());
+                .oauth2Client(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable()); // Necesario para APIs REST
 
         return http.build();
     }

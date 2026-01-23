@@ -16,7 +16,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid,profile,read,write
         provider:
-          spring:
+            spring:
             issuer-uri: http://oauth-server:9000
             authorization-uri: http://localhost:9000/oauth2/authorize
             token-uri: http://oauth-server:9000/oauth2/token
@@ -27,6 +27,12 @@ spring:
       default-filters:
         - TokenRelay
       routes:
+        - id: oauth-server
+          uri: http://oauth-server:9000
+          predicates:
+            - Path=/oauth2/**
+            - Path=/.well-known/**
+
         - id: catalogo-service
           uri: http://micro-catalogo:8080
           predicates:

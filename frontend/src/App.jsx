@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import AuthCallback from './pages/AuthCallback';
+import { login } from './services/auth';
 import MedicineList from './components/MedicineList';
 import BranchList from './components/BranchList';
 import SalesPOS from './components/SalesPOS';
@@ -33,6 +35,13 @@ const Layout = ({ children }) => {
           </h1>
         </div>
         <nav className="p-4 space-y-1">
+          {/* Login button - initiates OAuth2 login (SPA PKCE) */}
+          <button
+            onClick={() => login()}
+            className="block w-full px-4 py-2 rounded bg-indigo-600 text-white text-center"
+          >
+            Iniciar sesión
+          </button>
           <SidebarLink to="/" icon="📊" label="Dashboard" />
           <SidebarLink to="/medicines" icon="💊" label="Medicamentos" />
           <SidebarLink to="/branches" icon="🏥" label="Sucursales" />
@@ -59,6 +68,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/medicines" element={<MedicineList />} />
+          <Route path="/oauth2/callback" element={<AuthCallback />} />
           <Route path="/branches" element={<BranchList />} />
           <Route path="/sales" element={<SalesPOS />} />
           <Route path="/clients" element={<ClientList />} />
