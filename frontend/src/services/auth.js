@@ -73,3 +73,27 @@ export async function handleCallback() {
   if (token.refresh_token) localStorage.setItem('refresh_token', token.refresh_token);
   return token;
 }
+
+export async function logout() {
+  try {
+    // Call the backend logout endpoint to get the OAuth2 provider logout URL
+    // This will also invalidate the gateway session
+    const resp = await axios.post(API_BASE + '/api/logout', {}, { withCredentials: true });
+    
+    // Clear all local storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Get the logout URL from the response (includes id_token_hint for proper provider logout)
+    const logoutUrl = resp?.data?.logoutUrl || '/oauth2/authorization/gateway-client';
+    
+    // Redirect to the OAuth2 provider logout endpoint
+    window.location.href = logoutUrl;
+  } catch (err) {
+    console.error('Logout failed, redirecting to login', err);
+    localStorage.clear();
+    sessionStorage.clear();
+    // Fallback: redirect to login
+    window.location.href = '/oauth2/authorization/gateway-client';
+  }
+}

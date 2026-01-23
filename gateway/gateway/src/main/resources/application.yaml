@@ -76,7 +76,7 @@ spring:
           predicates:
             - Path=/api/inventario/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
 
         # Frontend route - must be LAST (catch-all)
         - id: frontend-service

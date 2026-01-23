@@ -5,9 +5,13 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebSession;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +21,11 @@ public class UserInfoController {
     @GetMapping("/api/userinfo")
     public Mono<ResponseEntity<Map<String, Object>>> getUserInfo(@AuthenticationPrincipal OidcUser oidcUser) {
         if (oidcUser == null) {
-            return Mono.just(ResponseEntity.ok(Map.of("authenticated", false)));
+            return Mono.just(ResponseEntity.ok()
+                .header("Cache-Control", "no-store, no-cache, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(Map.of("authenticated", false)));
         }
         
         Map<String, Object> userInfo = new HashMap<>();
@@ -27,16 +35,46 @@ public class UserInfoController {
         userInfo.put("email", oidcUser.getEmail());
         userInfo.put("roles", oidcUser.getClaimAsStringList("roles"));
         
-        return Mono.just(ResponseEntity.ok(userInfo));
+        return Mono.just(ResponseEntity.ok()
+            .header("Cache-Control", "no-store, no-cache, must-revalidate")
+            .header("Pragma", "no-cache")
+            .header("Expires", "0")
+            .body(userInfo));
     }
 
     @PostMapping("/api/logout")
-    public Mono<ResponseEntity<Map<String, Object>>> logout() {
-        // The actual logout will be handled by Spring Security's logout handler
-        // This endpoint just returns a response to the frontend
-        return Mono.just(ResponseEntity.ok(Map.of(
-            "success", true,
-            "logoutUrl", "/logout"
-        )));
+    public Mono<ResponseEntity<Map<String, Object>>> logout(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            ServerWebExchange exchange) {
+        
+        // Build the OAuth2 provider logout URL
+        String logoutUrl;
+        
+        if (oidcUser != null && oidcUser.getIdToken() != null) {
+            // Build full logout URL to oauth-server with id_token_hint
+            String idToken = oidcUser.getIdToken().getTokenValue();
+            String baseUrl = exchange.getRequest().getURI().getScheme() + "://" + 
+                           exchange.getRequest().getHeaders().getFirst("Host");
+            String postLogoutRedirectUri = baseUrl + "/oauth2/authorization/gateway-client";
+            
+            logoutUrl = "http://localhost:9000/connect/logout" +
+                       "?id_token_hint=" + URLEncoder.encode(idToken, StandardCharsets.UTF_8) +
+                       "&post_logout_redirect_uri=" + URLEncoder.encode(postLogoutRedirectUri, StandardCharsets.UTF_8);
+        } else {
+            // No session, just redirect to login
+            logoutUrl = "/oauth2/authorization/gateway-client";
+        }
+        
+        // Invalidate the session
+        return exchange.getSession()
+            .flatMap(WebSession::invalidate)
+            .then(Mono.just(ResponseEntity.ok()
+                .header("Cache-Control", "no-store, no-cache, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(Map.of(
+                    "success", true,
+                    "logoutUrl", logoutUrl
+                ))));
     }
 }
