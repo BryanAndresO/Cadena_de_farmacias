@@ -296,8 +296,7 @@ services:
     container_name: gateway
     ports:
       - "8080:8080"
-    environment:
-      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_SPRING_ISSUER_URI: http://oauth-server:9000
+    
     depends_on:
       - oauth-server
       - micro-catalogo

@@ -15,23 +15,26 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid,profile,read,write
+        # Browser goes directly to oauth-server for authorization (localhost:9000)
+        # Gateway uses internal hostname for backend token exchange
+        # Not using issuer-uri to avoid issuer validation mismatch
         provider:
-            spring:
-            issuer-uri: http://oauth-server:9000
+          spring:
             authorization-uri: http://localhost:9000/oauth2/authorize
             token-uri: http://oauth-server:9000/oauth2/token
             jwk-set-uri: http://oauth-server:9000/oauth2/jwks
             user-info-uri: http://oauth-server:9000/userinfo
+            user-name-attribute: sub
   cloud:
     gateway:
       default-filters:
         - TokenRelay
       routes:
         - id: oauth-server
+          order: -1
           uri: http://oauth-server:9000
           predicates:
-            - Path=/oauth2/**
-            - Path=/.well-known/**
+            - Path=/oauth2/**,/.well-known/**
 
         - id: catalogo-service
           uri: http://micro-catalogo:8080
@@ -77,6 +80,7 @@ spring:
 
         # Frontend route - must be LAST (catch-all)
         - id: frontend-service
+          order: 100
           uri: http://frontend:80
           predicates:
             - Path=/**
