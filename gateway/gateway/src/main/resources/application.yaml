@@ -37,42 +37,42 @@ spring:
             - Path=/oauth2/**,/.well-known/**
 
         - id: catalogo-service
-          uri: http://micro-catalogo:8080
+          uri: http://micro-catalogo:8081
           predicates:
             - Path=/api/catalogo/**
           filters:
             - StripPrefix=2
 
         - id: sucursal-service
-          uri: http://micro-sucursal:8080
+          uri: http://micro-sucursal:8082
           predicates:
             - Path=/api/sucursal/**
           filters:
             - StripPrefix=2
 
         - id: cliente-service
-          uri: http://micro-cliente:8080
+          uri: http://micro-cliente:8083
           predicates:
             - Path=/api/cliente/**
           filters:
             - StripPrefix=2
 
         - id: ventas-service
-          uri: http://micro-ventas:8080
+          uri: http://micro-ventas:8084
           predicates:
             - Path=/api/ventas/**
           filters:
             - StripPrefix=2
 
         - id: reporte-service
-          uri: http://micro-reporte:8080
+          uri: http://micro-reporte:8085
           predicates:
             - Path=/api/reporte/**
           filters:
             - StripPrefix=2
 
         - id: inventario-service
-          uri: http://micro-inventario:8080
+          uri: http://micro-inventario:8086
           predicates:
             - Path=/api/inventario/**
           filters:

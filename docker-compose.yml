@@ -155,7 +155,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://catalogo-db:3306/catalogodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       catalogo-db:
         condition: service_healthy
@@ -176,7 +176,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://sucursal-db:3306/sucursalesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       sucursal-db:
         condition: service_healthy
@@ -197,7 +197,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://cliente-db:3306/clientesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       cliente-db:
         condition: service_healthy
@@ -218,7 +218,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://ventas-db:3306/ventasdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       ventas-db:
         condition: service_healthy
@@ -239,7 +239,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://reporte-db:3306/reportesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       reporte-db:
         condition: service_healthy
@@ -260,7 +260,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://inventario-db:3306/inventariodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
       SPRING_DATASOURCE_PASSWORD: abcd
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://oauth-server:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
       CATALOGO_SERVICE_URL: http://micro-catalogo:8080
     depends_on:
       inventario-db:

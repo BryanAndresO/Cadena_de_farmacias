@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import AuthCallback from './pages/AuthCallback';
-import { login } from './services/auth';
 import MedicineList from './components/MedicineList';
 import BranchList from './components/BranchList';
 import SalesPOS from './components/SalesPOS';
@@ -21,6 +21,30 @@ const SidebarLink = ({ to, icon, label }) => {
 };
 
 const Layout = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch user info from the gateway
+    fetch('/api/userinfo', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setUser(data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching user info:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleLogout = () => {
+    // Redirect to Spring Security logout endpoint
+    window.location.href = '/logout';
+  };
+
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
@@ -35,13 +59,34 @@ const Layout = ({ children }) => {
           </h1>
         </div>
         <nav className="p-4 space-y-1">
-          {/* Login button - initiates OAuth2 login (SPA PKCE) */}
-          <button
-            onClick={() => login()}
-            className="block w-full px-4 py-2 rounded bg-indigo-600 text-white text-center"
-          >
-            Iniciar sesión
-          </button>
+          {/* User info and login/logout */}
+          {loading ? (
+            <div className="px-4 py-2 text-slate-400 text-sm">Cargando...</div>
+          ) : user ? (
+            <div className="mb-4 pb-4 border-b border-slate-600">
+              <div className="px-4 py-2 text-white">
+                <div className="text-sm font-medium">👤 {user.name || user.username}</div>
+                {user.roles && user.roles.length > 0 && (
+                  <div className="text-xs text-slate-400 mt-1">
+                    {user.roles.map(role => role.replace('ROLE_', '')).join(', ')}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="block w-full px-4 py-2 mt-2 rounded bg-red-600 hover:bg-red-700 text-white text-center transition-colors"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : (
+            <a
+              href="/oauth2/authorization/gateway-client"
+              className="block w-full px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-center text-decoration-none transition-colors mb-4"
+            >
+              Iniciar sesión
+            </a>
+          )}
           <SidebarLink to="/" icon="📊" label="Dashboard" />
           <SidebarLink to="/medicines" icon="💊" label="Medicamentos" />
           <SidebarLink to="/branches" icon="🏥" label="Sucursales" />
