@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import AuthCallback from './pages/AuthCallback';
 import MedicineList from './components/MedicineList';
@@ -7,11 +6,19 @@ import BranchList from './components/BranchList';
 import SalesPOS from './components/SalesPOS';
 import ClientList from './components/ClientList';
 import ReportsDashboard from './components/ReportsDashboard';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Sidebar Link Component for active state styling
-const SidebarLink = ({ to, icon, label }) => {
+const SidebarLink = ({ to, icon, label, requireAdmin = false }) => {
   const location = useLocation();
+  const { isAdmin } = useAuth();
   const isActive = location.pathname === to;
+  
+  // Hide link if it requires admin and user is not admin
+  if (requireAdmin && !isAdmin()) {
+    return null;
+  }
+  
   return (
     <Link to={to} className={`sidebar-link ${isActive ? 'active' : ''}`}>
       <span className="text-xl">{icon}</span>
@@ -21,44 +28,7 @@ const SidebarLink = ({ to, icon, label }) => {
 };
 
 const Layout = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Fetch user info from the gateway
-    fetch('/api/userinfo', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.authenticated) {
-          setUser(data);
-          setLoading(false);
-        } else {
-          // Not authenticated - redirect to login
-          window.location.href = '/oauth2/authorization/gateway-client';
-        }
-      })
-      .catch(err => {
-        console.error('Error fetching user info:', err);
-        // On error, redirect to login
-        window.location.href = '/oauth2/authorization/gateway-client';
-      });
-  }, []);
-
-  const handleLogout = async () => {
-    // Clear user state immediately
-    setUser(null);
-    
-    // Use frontend auth service to call backend logout, clear storage and
-    // redirect to provider logout when available.
-    try {
-      const { logout } = await import('./services/auth');
-      await logout();
-    } catch (err) {
-      console.error('Error during logout', err);
-      // Force a full page reload to clear all state
-      window.location.href = '/logout';
-    }
-  };
+  const { user, loading, logout, isAdmin } = useAuth();
 
   // Show loading screen while checking authentication
   if (loading) {
@@ -114,7 +84,7 @@ const Layout = ({ children }) => {
               )}
             </div>
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="block w-full px-4 py-2 mt-2 rounded bg-red-600 hover:bg-red-700 text-white text-center transition-colors"
             >
               Cerrar sesión
@@ -122,10 +92,10 @@ const Layout = ({ children }) => {
           </div>
           <SidebarLink to="/" icon="📊" label="Dashboard" />
           <SidebarLink to="/medicines" icon="💊" label="Medicamentos" />
-          <SidebarLink to="/branches" icon="🏥" label="Sucursales" />
+          <SidebarLink to="/branches" icon="🏥" label="Sucursales" requireAdmin={true} />
           <SidebarLink to="/clients" icon="👥" label="Clientes" />
           <SidebarLink to="/sales" icon="🛒" label="Terminal POS" />
-          <SidebarLink to="/reports" icon="📈" label="Reportes" />
+          <SidebarLink to="/reports" icon="📈" label="Reportes" requireAdmin={true} />
         </nav>
       </aside>
 
@@ -142,18 +112,20 @@ const Layout = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/medicines" element={<MedicineList />} />
-          <Route path="/oauth2/callback" element={<AuthCallback />} />
-          <Route path="/branches" element={<BranchList />} />
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/medicines" element={<MedicineList />} />
+            <Route path="/oauth2/callback" element={<AuthCallback />} />
+            <Route path="/branches" element={<BranchList />} />
           <Route path="/sales" element={<SalesPOS />} />
           <Route path="/clients" element={<ClientList />} />
           <Route path="/reports" element={<ReportsDashboard />} />
         </Routes>
       </Layout>
-    </BrowserRouter>
+    </AuthProvider>
+  </BrowserRouter>
   );
 }
 

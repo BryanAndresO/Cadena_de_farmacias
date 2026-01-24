@@ -77,10 +77,13 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/status").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
                 // Form login handles the redirect to the login page from the authorization
                 // server filter chain
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("http://localhost:8080/"))
                 .userDetailsService(userDetailsService);
 

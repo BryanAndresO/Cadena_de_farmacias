@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { apiReporte } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const ReportsDashboard = () => {
+    const { isAdmin } = useAuth();
     const [salesReports, setSalesReports] = useState([]);
     const [inventoryReports, setInventoryReports] = useState([]);
     const [activeTab, setActiveTab] = useState('sales');
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchSalesReports();
-        fetchInventoryReports();
+        if (isAdmin()) {
+            fetchSalesReports();
+            fetchInventoryReports();
+        }
     }, []);
 
     const fetchSalesReports = async () => {
@@ -17,6 +22,9 @@ const ReportsDashboard = () => {
             setSalesReports(response.data);
         } catch (error) {
             console.error("Error fetching sales reports", error);
+            if (error.response?.status === 403) {
+                setError('No tienes permisos para ver los reportes');
+            }
         }
     };
 
@@ -26,8 +34,36 @@ const ReportsDashboard = () => {
             setInventoryReports(response.data);
         } catch (error) {
             console.error("Error fetching inventory reports", error);
+            if (error.response?.status === 403) {
+                setError('No tienes permisos para ver los reportes');
+            }
         }
     };
+
+    // Access denied for non-admin users
+    if (!isAdmin()) {
+        return (
+            <div className="glass p-8 slide-up">
+                <div className="text-center py-16">
+                    <span className="text-6xl mb-4 block">🔒</span>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Acceso Denegado</h2>
+                    <p className="text-gray-500">Solo los administradores pueden acceder a los reportes.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="glass p-8 slide-up">
+                <div className="text-center py-16 text-red-500">
+                    <span className="text-6xl mb-4 block">⚠️</span>
+                    <h2 className="text-2xl font-bold mb-2">Error</h2>
+                    <p>{error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="glass p-8 slide-up">

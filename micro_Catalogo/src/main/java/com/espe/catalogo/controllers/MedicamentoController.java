@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class MedicamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(medicamentoDB);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<MedicamentoDTO> editar(@Valid @RequestBody MedicamentoDTO medicamentoDTO,
             @PathVariable Long id) {
@@ -48,6 +50,7 @@ public class MedicamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(medicamentoDTO));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<MedicamentoDTO> o = service.buscarPorID(id);

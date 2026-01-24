@@ -37,7 +37,7 @@ spring:
             - Path=/oauth2/**,/.well-known/**
 
         - id: catalogo-service
-          uri: http://micro-catalogo:8081
+          uri: http://micro-catalogo:8080
           predicates:
             - Path=/api/catalogo/**
           filters:

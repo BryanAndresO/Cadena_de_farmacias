@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -99,6 +100,7 @@ public class InventarioController {
     /**
      * PUT /api/inventario/{id} - Update inventory record
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<InventarioDTO> update(
             @PathVariable Long id,
@@ -110,6 +112,7 @@ public class InventarioController {
     /**
      * PATCH /api/inventario/{id}/adjust - Adjust stock
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/adjust")
     public ResponseEntity<InventarioDTO> adjustStock(
             @PathVariable Long id,
@@ -121,6 +124,7 @@ public class InventarioController {
     /**
      * DELETE /api/inventario/{id} - Delete inventory record
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);

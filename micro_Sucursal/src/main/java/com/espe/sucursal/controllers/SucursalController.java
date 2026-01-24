@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +25,14 @@ public class SucursalController {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public ResponseEntity<SucursalDTO> crear(@Valid @RequestBody SucursalDTO sucursalDTO) {
         SucursalDTO sucursalDB = service.guardar(sucursalDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(sucursalDB);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<SucursalDTO> editar(@Valid @RequestBody SucursalDTO sucursalDTO, @PathVariable Long id) {
         Optional<SucursalDTO> o = service.buscarPorID(id);
@@ -40,6 +43,7 @@ public class SucursalController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(sucursalDTO));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<SucursalDTO> o = service.buscarPorID(id);

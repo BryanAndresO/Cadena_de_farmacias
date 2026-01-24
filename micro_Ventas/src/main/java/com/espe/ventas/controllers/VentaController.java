@@ -6,6 +6,7 @@ import com.espe.ventas.services.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class VentaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ventaGuardada);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<VentaDTO> editar(@jakarta.validation.Valid @RequestBody VentaDTO ventaDTO,
             @PathVariable Long id) {
@@ -44,6 +46,7 @@ public class VentaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(ventaExistente));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<VentaDTO> o = service.buscarPorID(id);

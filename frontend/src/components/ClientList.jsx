@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { apiCliente } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import ClientForm from './ClientForm';
 
 const ClientList = () => {
+    const { isAdmin } = useAuth();
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -43,7 +45,11 @@ const ClientList = () => {
                 await apiCliente.delete(`/clientes/${id}`);
                 fetchClients();
             } catch (error) {
-                alert('Error al eliminar cliente');
+                if (error.response?.status === 403) {
+                    alert('No tienes permisos para eliminar clientes');
+                } else {
+                    alert('Error al eliminar cliente');
+                }
             }
         }
     };
@@ -58,7 +64,11 @@ const ClientList = () => {
             setShowForm(false);
             fetchClients();
         } catch (error) {
-            alert('Error al guardar cliente');
+            if (error.response?.status === 403) {
+                alert('No tienes permisos para esta operación');
+            } else {
+                alert('Error al guardar cliente');
+            }
             console.error(error);
         }
     };
@@ -111,20 +121,27 @@ const ClientList = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-2 border-t border-gray-100 pt-4">
-                            <button
-                                onClick={() => handleEdit(client)}
-                                className="flex-1 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-                            >
-                                Editar
-                            </button>
-                            <button
-                                onClick={() => handleDelete(client.id)}
-                                className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                            >
-                                Eliminar
-                            </button>
-                        </div>
+                        {isAdmin() && (
+                            <div className="flex gap-2 border-t border-gray-100 pt-4">
+                                <button
+                                    onClick={() => handleEdit(client)}
+                                    className="flex-1 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(client.id)}
+                                    className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                >
+                                    Eliminar
+                                </button>
+                            </div>
+                        )}
+                        {!isAdmin() && (
+                            <div className="border-t border-gray-100 pt-4 text-center">
+                                <span className="text-xs text-gray-400">Solo lectura</span>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

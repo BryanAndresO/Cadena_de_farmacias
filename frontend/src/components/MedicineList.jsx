@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { apiCatalogo } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 import MedicineForm from './MedicineForm';
 
 const MedicineList = () => {
+    const { isAdmin } = useAuth();
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,7 +35,11 @@ const MedicineList = () => {
                 await apiCatalogo.delete(`/medicamentos/${id}`);
                 setMedicines(medicines.filter(m => m.id !== id));
             } catch (err) {
-                alert('Error al eliminar');
+                if (err.response?.status === 403) {
+                    alert('No tienes permisos para eliminar medicamentos');
+                } else {
+                    alert('Error al eliminar');
+                }
             }
         }
     };
@@ -75,7 +81,7 @@ const MedicineList = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto slide-up">
                         <MedicineForm
-                            medicine={editingMedicine} // We need to update MedicineForm to accept this prop
+                            medicine={editingMedicine}
                             onSave={handleSave}
                             onCancel={() => setShowForm(false)}
                         />
@@ -103,18 +109,25 @@ const MedicineList = () => {
                                 <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm text-gray-600">{med.stock}</td>
                                 <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm">
                                     <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleEdit(med)}
-                                            className="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition-colors"
-                                        >
-                                            Editar
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(med.id)}
-                                            className="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition-colors"
-                                        >
-                                            Eliminar
-                                        </button>
+                                        {isAdmin() && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleEdit(med)}
+                                                    className="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition-colors"
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(med.id)}
+                                                    className="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition-colors"
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </>
+                                        )}
+                                        {!isAdmin() && (
+                                            <span className="text-gray-400 text-xs">Solo lectura</span>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { apiSucursal, apiInventario } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import BranchForm from './BranchForm';
 import StockAssignmentForm from './StockAssignmentForm';
 
 const BranchList = () => {
+    const { isAdmin } = useAuth();
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState(null);
     const [inventory, setInventory] = useState([]);
@@ -169,10 +171,12 @@ const BranchList = () => {
                                         <h4 className="font-bold text-gray-800 group-hover:text-indigo-700">{b.nombre}</h4>
                                         <p className="text-sm text-gray-500 flex items-center gap-1">📍 {b.ciudad}</p>
                                     </div>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={(e) => handleEdit(e, b)} className="p-1 text-blue-600 hover:bg-blue-100 rounded">✏️</button>
-                                        <button onClick={(e) => handleDelete(e, b.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">🗑️</button>
-                                    </div>
+                                    {isAdmin() && (
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={(e) => handleEdit(e, b)} className="p-1 text-blue-600 hover:bg-blue-100 rounded">✏️</button>
+                                            <button onClick={(e) => handleDelete(e, b.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">🗑️</button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -187,12 +191,14 @@ const BranchList = () => {
                                 <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                     📦 Inventario: <span className="text-indigo-600">{selectedBranch.nombre}</span>
                                 </h3>
-                                <button
-                                    onClick={() => setShowStockForm(true)}
-                                    className="btn-secondary text-sm py-1"
-                                >
-                                    + Asignar Producto
-                                </button>
+                                {isAdmin() && (
+                                    <button
+                                        onClick={() => setShowStockForm(true)}
+                                        className="btn-secondary text-sm py-1"
+                                    >
+                                        + Asignar Producto
+                                    </button>
+                                )}
                             </div>
 
                             <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -203,7 +209,7 @@ const BranchList = () => {
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Stock Disponible</th>
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Stock Mínimo</th>
                                             <th className="p-3 font-semibold text-gray-600 text-sm">Estado</th>
-                                            <th className="p-3 font-semibold text-gray-600 text-sm">Acciones</th>
+                                            {isAdmin() && <th className="p-3 font-semibold text-gray-600 text-sm">Acciones</th>}
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -217,10 +223,12 @@ const BranchList = () => {
                                                         {item.cantidad < (item.stockMinimo || 10) ? '🔴 Bajo Stock' : '🟢 Normal'}
                                                     </span>
                                                 </td>
-                                                <td className="p-3">
-                                                    <button onClick={() => handleEditInventory(item)} className="text-blue-600 hover:text-blue-800 mr-3" title="Editar">✏️</button>
-                                                    <button onClick={() => handleDeleteInventory(item.id)} className="text-red-600 hover:text-red-800" title="Eliminar">🗑️</button>
-                                                </td>
+                                                {isAdmin() && (
+                                                    <td className="p-3">
+                                                        <button onClick={() => handleEditInventory(item)} className="text-blue-600 hover:text-blue-800 mr-3" title="Editar">✏️</button>
+                                                        <button onClick={() => handleDeleteInventory(item.id)} className="text-red-600 hover:text-red-800" title="Eliminar">🗑️</button>
+                                                    </td>
+                                                )}
                                             </tr>
                                         )) : (
                                             <tr>
