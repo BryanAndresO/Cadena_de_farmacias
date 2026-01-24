@@ -172,32 +172,32 @@ const SalesPOS = () => {
 
     return (
         <div className="slide-up">
-            <h2 className="text-3xl font-bold mb-2 text-gray-800">Punto de Venta</h2>
-            <p className="text-gray-500 mb-8">Facturación y registro de ventas</p>
+            <h2 className="text-2xl font-semibold mb-2 text-neutral-800">Punto de Venta</h2>
+            <p className="text-neutral-500 text-sm mb-6">Facturación y registro de ventas</p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Left Column: Selection & Product Catalog (8 cols) */}
                 <div className="lg:col-span-8 space-y-6">
 
                     {/* Step Indicator */}
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <div className="bg-white p-4 rounded border border-neutral-200">
                         <div className="flex items-center justify-between">
-                            <div className={`flex items-center ${selectedBranch ? 'text-green-600' : 'text-indigo-600'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${selectedBranch ? 'bg-green-100' : 'bg-indigo-100'}`}>
+                            <div className={`flex items-center ${selectedBranch ? 'text-neutral-700' : 'text-neutral-600'}`}>
+                                <div className={`w-7 h-7 rounded text-sm flex items-center justify-center font-medium ${selectedBranch ? 'bg-neutral-200 text-neutral-700' : 'bg-neutral-100 text-neutral-600'}`}>
                                     {selectedBranch ? '✓' : '1'}
                                 </div>
-                                <span className="ml-2 font-semibold">Seleccionar Sucursal</span>
+                                <span className="ml-2 font-medium text-sm">Seleccionar Sucursal</span>
                             </div>
-                            <div className="h-1 flex-1 mx-4 bg-gray-200 rounded"></div>
-                            <div className={`flex items-center ${selectedClient ? 'text-green-600' : selectedBranch ? 'text-indigo-600' : 'text-gray-400'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${selectedClient ? 'bg-green-100' : selectedBranch ? 'bg-indigo-100' : 'bg-gray-100'}`}>
+                            <div className="h-px flex-1 mx-4 bg-neutral-200"></div>
+                            <div className={`flex items-center ${selectedClient ? 'text-neutral-700' : selectedBranch ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                                <div className={`w-7 h-7 rounded text-sm flex items-center justify-center font-medium ${selectedClient ? 'bg-neutral-200 text-neutral-700' : selectedBranch ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-50 text-neutral-400'}`}>
                                     {selectedClient ? '✓' : '2'}
                                 </div>
-                                <span className="ml-2 font-semibold">Seleccionar Cliente</span>
+                                <span className="ml-2 font-medium text-sm">Seleccionar Cliente</span>
                             </div>
-                            <div className="h-1 flex-1 mx-4 bg-gray-200 rounded"></div>
-                            <div className={`flex items-center ${cart.length > 0 ? 'text-green-600' : selectedClient ? 'text-indigo-600' : 'text-gray-400'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${cart.length > 0 ? 'bg-green-100' : selectedClient ? 'bg-indigo-100' : 'bg-gray-100'}`}>
+                            <div className="h-px flex-1 mx-4 bg-neutral-200"></div>
+                            <div className={`flex items-center ${cart.length > 0 ? 'text-neutral-700' : selectedClient ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                                <div className={`w-7 h-7 rounded text-sm flex items-center justify-center font-medium ${cart.length > 0 ? 'bg-neutral-200 text-neutral-700' : selectedClient ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-50 text-neutral-400'}`}>
                                     {cart.length > 0 ? '✓' : '3'}
                                 </div>
                                 <span className="ml-2 font-semibold">Agregar Productos</span>
@@ -221,7 +221,7 @@ const SalesPOS = () => {
                             </select>
                         </div>
                         <div className="flex-1">
-                            <label className="block text-sm font-bold mb-2 text-gray-700">2. Cliente *</label>
+                            <label className="block text-sm font-medium mb-2 text-neutral-700">2. Cliente *</label>
                             <select
                                 className="input-field"
                                 value={selectedClient}
@@ -238,41 +238,41 @@ const SalesPOS = () => {
 
                     {/* Product Grid */}
                     {selectedBranch && selectedClient ? (
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="text-lg font-bold mb-4 text-gray-800">
+                        <div className="bg-white p-5 rounded border border-neutral-200">
+                            <h3 className="text-base font-semibold mb-4 text-neutral-800">
                                 3. Productos Disponibles en {branches.find(b => b.id.toString() === selectedBranch)?.nombre}
                             </h3>
                             {products.length > 0 ? (
-                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[500px] overflow-y-auto p-1">
                                     {products.map(p => (
                                         <div
                                             key={p.id}
-                                            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-gray-50 hover:bg-white flex flex-col justify-between"
+                                            className="border border-neutral-200 rounded p-3 hover:border-neutral-300 transition-colors cursor-pointer bg-neutral-50 hover:bg-white flex flex-col justify-between"
                                             onClick={() => addToCart(p)}
                                         >
                                             <div>
-                                                <div className="font-bold text-gray-800">{p.nombre}</div>
-                                                <div className="text-xs text-gray-500 mb-2">{p.laboratorio}</div>
-                                                <div className="text-xs text-indigo-600 font-semibold">Stock: {p.branchStock}</div>
+                                                <div className="font-medium text-neutral-800 text-sm">{p.nombre}</div>
+                                                <div className="text-xs text-neutral-500 mb-2">{p.laboratorio}</div>
+                                                <div className="text-xs text-neutral-600 font-medium">Stock: {p.branchStock}</div>
                                             </div>
                                             <div className="flex justify-between items-center mt-2">
-                                                <span className="font-bold text-indigo-600">${p.precio}</span>
-                                                <button className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-700">+</button>
+                                                <span className="font-semibold text-neutral-800 text-sm">${p.precio}</span>
+                                                <button className="bg-zinc-800 text-white w-7 h-7 rounded flex items-center justify-center hover:bg-zinc-700 text-sm">+</button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                                    <p className="text-lg">No hay productos disponibles en esta sucursal</p>
-                                    <p className="text-sm mt-2">Asigne productos al inventario de la sucursal primero</p>
+                                <div className="text-center py-10 text-neutral-400 border border-dashed border-neutral-200 rounded">
+                                    <p className="text-sm">No hay productos disponibles en esta sucursal</p>
+                                    <p className="text-xs mt-1">Asigne productos al inventario de la sucursal primero</p>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <div className="bg-white p-12 rounded-xl shadow-sm border-2 border-dashed border-gray-200 text-center">
-                            <div className="text-6xl mb-4">🏪</div>
-                            <p className="text-gray-500 text-lg">
+                        <div className="bg-white p-10 rounded border border-dashed border-neutral-200 text-center">
+                            <div className="text-4xl mb-3">🏪</div>
+                            <p className="text-neutral-500 text-sm">
                                 {!selectedBranch ? 'Seleccione una sucursal para comenzar' : 'Seleccione un cliente para continuar'}
                             </p>
                         </div>
@@ -281,40 +281,40 @@ const SalesPOS = () => {
 
                 {/* Right Column: Cart (4 cols) */}
                 <div className="lg:col-span-4">
-                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-4">
-                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded border border-neutral-200 sticky top-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2 text-neutral-800">
                             🛒 Carrito de Compras
                         </h3>
 
-                        <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto">
+                        <div className="space-y-3 mb-5 max-h-[400px] overflow-y-auto">
                             {cart.length === 0 ? (
-                                <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                                <div className="text-center py-6 text-neutral-400 border border-dashed border-neutral-200 rounded text-sm">
                                     El carrito está vacío
                                 </div>
                             ) : cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div key={item.id} className="flex justify-between items-center p-3 bg-neutral-50 rounded">
                                     <div className="flex-1">
-                                        <div className="font-medium text-sm text-gray-800">{item.nombre}</div>
-                                        <div className="text-xs text-gray-500">${item.precio} c/u</div>
+                                        <div className="font-medium text-sm text-neutral-800">{item.nombre}</div>
+                                        <div className="text-xs text-neutral-500">${item.precio} c/u</div>
                                         <div className="flex items-center gap-2 mt-1">
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+                                                className="w-6 h-6 bg-neutral-200 hover:bg-neutral-300 rounded text-sm"
                                             >-</button>
-                                            <span className="text-sm font-bold">{item.quantity}</span>
+                                            <span className="text-sm font-medium">{item.quantity}</span>
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+                                                className="w-6 h-6 bg-neutral-200 hover:bg-neutral-300 rounded text-sm"
                                             >+</button>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="font-bold text-gray-800">
+                                        <div className="font-semibold text-neutral-800 text-sm">
                                             ${(item.precio * item.quantity).toFixed(2)}
                                         </div>
                                         <button
                                             onClick={() => removeFromCart(item.id)}
-                                            className="text-red-400 hover:text-red-600 text-xs mt-1"
+                                            className="text-neutral-400 hover:text-neutral-600 text-xs mt-1"
                                         >
                                             Eliminar
                                         </button>
@@ -324,16 +324,16 @@ const SalesPOS = () => {
                         </div>
 
                         {/* Summary */}
-                        <div className="border-t border-gray-200 pt-4 space-y-2 mb-6">
-                            <div className="flex justify-between text-gray-600">
+                        <div className="border-t border-neutral-200 pt-4 space-y-2 mb-5">
+                            <div className="flex justify-between text-neutral-600 text-sm">
                                 <span>Subtotal</span>
                                 <span>${calculateTotal().toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-neutral-600 text-sm">
                                 <span>Impuestos (0%)</span>
                                 <span>$0.00</span>
                             </div>
-                            <div className="flex justify-between text-2xl font-bold text-indigo-700 pt-2">
+                            <div className="flex justify-between text-lg font-semibold text-neutral-800 pt-2">
                                 <span>Total</span>
                                 <span>${calculateTotal().toFixed(2)}</span>
                             </div>
@@ -342,13 +342,13 @@ const SalesPOS = () => {
                         <button
                             onClick={handleCheckout}
                             disabled={cart.length === 0 || !selectedClient || !selectedBranch}
-                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl text-lg font-bold hover:shadow-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            className="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Confirmar Venta
                         </button>
 
                         {(!selectedClient || !selectedBranch) && (
-                            <p className="text-xs text-center text-red-500 mt-2">
+                            <p className="text-xs text-center text-neutral-500 mt-2">
                                 * Debe seleccionar Sucursal y Cliente
                             </p>
                         )}

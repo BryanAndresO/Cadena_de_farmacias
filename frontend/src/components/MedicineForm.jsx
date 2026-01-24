@@ -53,32 +53,32 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg">
-            <h3 className="text-xl font-bold mb-4">{medicine ? 'Editar Medicamento' : 'Nuevo Medicamento'}</h3>
+        <div className="bg-white rounded">
+            <h3 className="text-lg font-semibold mb-4 text-neutral-800">{medicine ? 'Editar Medicamento' : 'Nuevo Medicamento'}</h3>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-gray-700">Nombre</label>
-                    <input name="nombre" value={formData.nombre} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <label className="block text-neutral-600 text-sm mb-1">Nombre</label>
+                    <input name="nombre" value={formData.nombre} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Laboratorio</label>
-                    <input name="laboratorio" value={formData.laboratorio} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <label className="block text-neutral-600 text-sm mb-1">Laboratorio</label>
+                    <input name="laboratorio" value={formData.laboratorio} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
                 </div>
                 <div className="md:col-span-2">
-                    <label className="block text-gray-700">Descripción</label>
-                    <input name="descripcion" value={formData.descripcion} onChange={handleChange} className="w-full border p-2 rounded" />
+                    <label className="block text-neutral-600 text-sm mb-1">Descripción</label>
+                    <input name="descripcion" value={formData.descripcion} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Precio</label>
-                    <input type="number" step="0.01" name="precio" value={formData.precio} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <label className="block text-neutral-600 text-sm mb-1">Precio</label>
+                    <input type="number" step="0.01" name="precio" value={formData.precio} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Stock Inicial</label>
-                    <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <label className="block text-neutral-600 text-sm mb-1">Stock Inicial</label>
+                    <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
                 </div>
                 <div className="md:col-span-2 flex justify-end space-x-2">
-                    <button type="button" onClick={onCancel} className="bg-gray-300 text-gray-700 px-4 py-2 rounded">Cancelar</button>
-                    <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Guardar</button>
+                    <button type="button" onClick={onCancel} className="bg-neutral-100 text-neutral-700 px-4 py-2 rounded text-sm hover:bg-neutral-200 border border-neutral-200">Cancelar</button>
+                    <button type="submit" className="bg-zinc-800 text-white px-4 py-2 rounded text-sm hover:bg-zinc-700">Guardar</button>
                 </div>
             </form>
         </div>

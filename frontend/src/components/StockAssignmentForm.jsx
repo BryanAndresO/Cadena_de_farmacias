@@ -70,21 +70,21 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-96 slide-up">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg w-96 slide-up border border-neutral-200">
+                <h3 className="text-lg font-semibold mb-4 text-neutral-800">
                     {editingItem ? 'Editar Inventario' : 'Asignar Inventario a Sucursal'}
                 </h3>
 
                 {error && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">
+                    <div className="bg-neutral-100 text-neutral-700 p-3 rounded mb-4 text-sm border border-neutral-200">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Producto</label>
+                        <label className="block text-neutral-700 text-sm font-medium mb-2">Producto</label>
                         <select
                             name="productoId"
                             value={form.productoId}
@@ -101,12 +101,12 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                             ))}
                         </select>
                         {editingItem && (
-                            <p className="text-xs text-gray-500 mt-1">No se puede cambiar el producto al editar</p>
+                            <p className="text-xs text-neutral-500 mt-1">No se puede cambiar el producto al editar</p>
                         )}
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Cantidad a Asignar</label>
+                        <label className="block text-neutral-700 text-sm font-medium mb-2">Cantidad a Asignar</label>
                         <input
                             type="number"
                             name="stock"
@@ -119,7 +119,7 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Alerta de Stock Mínimo</label>
+                        <label className="block text-neutral-700 text-sm font-medium mb-2">Alerta de Stock Mínimo</label>
                         <input
                             type="number"
                             name="stockMinimo"

@@ -64,10 +64,10 @@ const MedicineList = () => {
 
     return (
         <div className="slide-up">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800">Catálogo de Medicamentos</h2>
-                    <p className="text-gray-500">Gestión de productos farmacéuticos</p>
+                    <h2 className="text-2xl font-semibold text-neutral-800">Catálogo de Medicamentos</h2>
+                    <p className="text-neutral-500 text-sm">Gestión de productos farmacéuticos</p>
                 </div>
                 <button
                     onClick={handleCreate}
@@ -89,44 +89,44 @@ const MedicineList = () => {
                 </div>
             )}
 
-            <div className="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-100">
-                <table className="min-w-full leading-normal">
+            <div className="bg-white rounded border border-neutral-200 overflow-hidden">
+                <table className="min-w-full">
                     <thead>
                         <tr>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Laboratorio</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Precio</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock Base</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+                            <th className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Nombre</th>
+                            <th className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Laboratorio</th>
+                            <th className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Precio</th>
+                            <th className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Stock Base</th>
+                            <th className="px-4 py-3 border-b border-neutral-200 bg-neutral-50 text-left text-xs font-medium text-neutral-600 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {medicines.map((med) => (
-                            <tr key={med.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm font-medium text-gray-900">{med.nombre}</td>
-                                <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm text-gray-600">{med.laboratorio}</td>
-                                <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm font-bold text-green-600">${med.precio}</td>
-                                <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm text-gray-600">{med.stock}</td>
-                                <td className="px-5 py-5 border-b border-gray-100 bg-white text-sm">
+                            <tr key={med.id} className="hover:bg-neutral-50 transition-colors">
+                                <td className="px-4 py-3 border-b border-neutral-100 text-sm font-medium text-neutral-800">{med.nombre}</td>
+                                <td className="px-4 py-3 border-b border-neutral-100 text-sm text-neutral-600">{med.laboratorio}</td>
+                                <td className="px-4 py-3 border-b border-neutral-100 text-sm font-medium text-neutral-800">${med.precio}</td>
+                                <td className="px-4 py-3 border-b border-neutral-100 text-sm text-neutral-600">{med.stock}</td>
+                                <td className="px-4 py-3 border-b border-neutral-100 text-sm">
                                     <div className="flex gap-2">
                                         {isAdmin() && (
                                             <>
                                                 <button
                                                     onClick={() => handleEdit(med)}
-                                                    className="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition-colors"
+                                                    className="text-neutral-600 hover:bg-neutral-100 px-3 py-1 rounded text-sm transition-colors"
                                                 >
                                                     Editar
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(med.id)}
-                                                    className="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition-colors"
+                                                    className="text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 px-3 py-1 rounded text-sm transition-colors"
                                                 >
                                                     Eliminar
                                                 </button>
                                             </>
                                         )}
                                         {!isAdmin() && (
-                                            <span className="text-gray-400 text-xs">Solo lectura</span>
+                                            <span className="text-neutral-400 text-xs">Solo lectura</span>
                                         )}
                                     </div>
                                 </td>

@@ -77,10 +77,10 @@ const ClientList = () => {
 
     return (
         <div className="slide-up">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800">Gestión de Clientes</h2>
-                    <p className="text-gray-500">Administración de la base de datos de compradores</p>
+                    <h2 className="text-2xl font-semibold text-neutral-800">Gestión de Clientes</h2>
+                    <p className="text-neutral-500 text-sm">Administración de la base de datos de compradores</p>
                 </div>
                 <button
                     onClick={handleCreate}
@@ -90,56 +90,56 @@ const ClientList = () => {
                 </button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {clients.map(client => (
-                    <div key={client.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-1">
+                    <div key={client.id} className="bg-white p-5 rounded border border-neutral-200 hover:border-neutral-300 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-9 h-9 rounded bg-neutral-200 flex items-center justify-center text-neutral-600 font-medium text-sm">
                                     {client.nombre?.charAt(0) || '?'}{client.apellido?.charAt(0) || '?'}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{client.nombre || 'N/A'} {client.apellido || ''}</h3>
-                                    <p className="text-xs text-indigo-600 font-medium">{client.email || 'N/A'}</p>
+                                    <h3 className="text-base font-semibold text-neutral-800 leading-tight">{client.nombre || 'N/A'} {client.apellido || ''}</h3>
+                                    <p className="text-xs text-neutral-500">{client.email || 'N/A'}</p>
                                 </div>
                             </div>
-                            <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded">#{client.id}</span>
+                            <span className="text-xs font-mono text-neutral-400 bg-neutral-100 px-2 py-1 rounded">#{client.id}</span>
                         </div>
 
-                        <div className="space-y-2 text-sm text-gray-600 mb-6 bg-gray-50 p-3 rounded-lg">
+                        <div className="space-y-2 text-sm text-neutral-600 mb-5 bg-neutral-50 p-3 rounded">
                             <div className="flex items-center gap-2">
-                                <span className="w-5 text-center">🆔</span>
-                                <span className="font-medium text-gray-700">{client.cedula}</span>
+                                <span className="w-5 text-center text-xs">🆔</span>
+                                <span className="font-medium text-neutral-700">{client.cedula}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="w-5 text-center">📞</span>
+                                <span className="w-5 text-center text-xs">📞</span>
                                 <span>{client.telefono}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="w-5 text-center">📍</span>
+                                <span className="w-5 text-center text-xs">📍</span>
                                 <span className="truncate" title={client.direccion}>{client.direccion}</span>
                             </div>
                         </div>
 
                         {isAdmin() && (
-                            <div className="flex gap-2 border-t border-gray-100 pt-4">
+                            <div className="flex gap-2 border-t border-neutral-100 pt-3">
                                 <button
                                     onClick={() => handleEdit(client)}
-                                    className="flex-1 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                                    className="flex-1 py-2 text-sm font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 rounded transition-colors"
                                 >
                                     Editar
                                 </button>
                                 <button
                                     onClick={() => handleDelete(client.id)}
-                                    className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                    className="flex-1 py-2 text-sm font-medium text-neutral-500 bg-neutral-100 hover:bg-neutral-200 rounded transition-colors"
                                 >
                                     Eliminar
                                 </button>
                             </div>
                         )}
                         {!isAdmin() && (
-                            <div className="border-t border-gray-100 pt-4 text-center">
-                                <span className="text-xs text-gray-400">Solo lectura</span>
+                            <div className="border-t border-neutral-100 pt-3 text-center">
+                                <span className="text-xs text-neutral-400">Solo lectura</span>
                             </div>
                         )}
                     </div>

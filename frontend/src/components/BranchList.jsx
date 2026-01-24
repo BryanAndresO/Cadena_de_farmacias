@@ -143,38 +143,38 @@ const BranchList = () => {
     return (
         <div className="slide-up">
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800">Gestión de Sucursales</h2>
-                    <p className="text-gray-500">Administra puntos de venta e inventarios</p>
+                    <h2 className="text-2xl font-semibold text-neutral-800">Gestión de Sucursales</h2>
+                    <p className="text-neutral-500 text-sm">Administra puntos de venta e inventarios</p>
                 </div>
                 <button onClick={handleCreate} className="btn-primary w-auto flex items-center gap-2">
                     <span>+</span> Nueva Sucursal
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* List View */}
-                <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-4 bg-gray-50 border-b border-gray-100 font-semibold text-gray-700">
+                <div className="lg:col-span-1 bg-white rounded border border-neutral-200 overflow-hidden">
+                    <div className="p-3 bg-neutral-50 border-b border-neutral-200 font-medium text-neutral-700 text-sm">
                         Listado de Sucursales
                     </div>
-                    <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto">
+                    <div className="divide-y divide-neutral-100 max-h-[600px] overflow-y-auto">
                         {branches.map(b => (
                             <div
                                 key={b.id}
                                 onClick={() => handleSelectBranch(b)}
-                                className={`p-4 cursor-pointer transition-all hover:bg-indigo-50 group ${selectedBranch?.id === b.id ? 'bg-indigo-50 border-l-4 border-indigo-600' : 'border-l-4 border-transparent'}`}
+                                className={`p-3 cursor-pointer transition-colors hover:bg-neutral-50 group ${selectedBranch?.id === b.id ? 'bg-neutral-50 border-l-2 border-neutral-600' : 'border-l-2 border-transparent'}`}
                             >
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h4 className="font-bold text-gray-800 group-hover:text-indigo-700">{b.nombre}</h4>
-                                        <p className="text-sm text-gray-500 flex items-center gap-1">📍 {b.ciudad}</p>
+                                        <h4 className="font-medium text-neutral-800 text-sm group-hover:text-neutral-900">{b.nombre}</h4>
+                                        <p className="text-xs text-neutral-500 flex items-center gap-1">📍 {b.ciudad}</p>
                                     </div>
                                     {isAdmin() && (
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={(e) => handleEdit(e, b)} className="p-1 text-blue-600 hover:bg-blue-100 rounded">✏️</button>
-                                            <button onClick={(e) => handleDelete(e, b.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">🗑️</button>
+                                            <button onClick={(e) => handleEdit(e, b)} className="p-1 text-neutral-500 hover:bg-neutral-100 rounded text-sm">✏️</button>
+                                            <button onClick={(e) => handleDelete(e, b.id)} className="p-1 text-neutral-500 hover:bg-neutral-100 rounded text-sm">🗑️</button>
                                         </div>
                                     )}
                                 </div>
@@ -184,12 +184,12 @@ const BranchList = () => {
                 </div>
 
                 {/* Detail/Inventory View */}
-                <div className="lg:col-span-2 glass p-6">
+                <div className="lg:col-span-2 glass p-5">
                     {selectedBranch ? (
                         <>
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                    📦 Inventario: <span className="text-indigo-600">{selectedBranch.nombre}</span>
+                            <div className="flex justify-between items-center mb-5">
+                                <h3 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
+                                    📦 Inventario: <span className="text-neutral-600">{selectedBranch.nombre}</span>
                                 </h3>
                                 {isAdmin() && (
                                     <button
@@ -201,38 +201,38 @@ const BranchList = () => {
                                 )}
                             </div>
 
-                            <div className="overflow-x-auto rounded-lg border border-gray-200">
+                            <div className="overflow-x-auto rounded border border-neutral-200">
                                 <table className="w-full text-left bg-white">
-                                    <thead className="bg-gray-50">
+                                    <thead className="bg-neutral-50">
                                         <tr>
-                                            <th className="p-3 font-semibold text-gray-600 text-sm">Producto ID</th>
-                                            <th className="p-3 font-semibold text-gray-600 text-sm">Stock Disponible</th>
-                                            <th className="p-3 font-semibold text-gray-600 text-sm">Stock Mínimo</th>
-                                            <th className="p-3 font-semibold text-gray-600 text-sm">Estado</th>
-                                            {isAdmin() && <th className="p-3 font-semibold text-gray-600 text-sm">Acciones</th>}
+                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Producto ID</th>
+                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Stock Disponible</th>
+                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Stock Mínimo</th>
+                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Estado</th>
+                                            {isAdmin() && <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Acciones</th>}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-100">
+                                    <tbody className="divide-y divide-neutral-100">
                                         {inventory.length > 0 ? inventory.map(item => (
-                                            <tr key={item.id} className="hover:bg-gray-50">
-                                                <td className="p-3 text-gray-700">#{item.productoId}</td>
-                                                <td className="p-3 font-mono font-bold text-indigo-600">{item.cantidad}</td>
-                                                <td className="p-3 text-gray-600">{item.stockMinimo || 0}</td>
+                                            <tr key={item.id} className="hover:bg-neutral-50">
+                                                <td className="p-3 text-neutral-700 text-sm">#{item.productoId}</td>
+                                                <td className="p-3 font-mono font-medium text-neutral-800 text-sm">{item.cantidad}</td>
+                                                <td className="p-3 text-neutral-600 text-sm">{item.stockMinimo || 0}</td>
                                                 <td className="p-3">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.cantidad < (item.stockMinimo || 10) ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                                        {item.cantidad < (item.stockMinimo || 10) ? '🔴 Bajo Stock' : '🟢 Normal'}
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${item.cantidad < (item.stockMinimo || 10) ? 'bg-neutral-200 text-neutral-700' : 'bg-neutral-100 text-neutral-600'}`}>
+                                                        {item.cantidad < (item.stockMinimo || 10) ? 'Bajo Stock' : 'Normal'}
                                                     </span>
                                                 </td>
                                                 {isAdmin() && (
                                                     <td className="p-3">
-                                                        <button onClick={() => handleEditInventory(item)} className="text-blue-600 hover:text-blue-800 mr-3" title="Editar">✏️</button>
-                                                        <button onClick={() => handleDeleteInventory(item.id)} className="text-red-600 hover:text-red-800" title="Eliminar">🗑️</button>
+                                                        <button onClick={() => handleEditInventory(item)} className="text-neutral-500 hover:text-neutral-700 mr-2 text-sm" title="Editar">✏️</button>
+                                                        <button onClick={() => handleDeleteInventory(item.id)} className="text-neutral-500 hover:text-neutral-700 text-sm" title="Eliminar">🗑️</button>
                                                     </td>
                                                 )}
                                             </tr>
                                         )) : (
                                             <tr>
-                                                <td colSpan="6" className="p-8 text-center text-gray-400 italic">
+                                                <td colSpan="6" className="p-6 text-center text-neutral-400 text-sm">
                                                     No hay items registrados en este inventario.
                                                 </td>
                                             </tr>
@@ -242,9 +242,9 @@ const BranchList = () => {
                             </div>
                         </>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400 p-12 text-center border-2 border-dashed border-gray-200 rounded-xl">
-                            <span className="text-4xl mb-4">🏪</span>
-                            <p className="text-lg">Seleccione una sucursal del listado para ver su inventario</p>
+                        <div className="h-full flex flex-col items-center justify-center text-neutral-400 p-10 text-center border border-dashed border-neutral-200 rounded">
+                            <span className="text-3xl mb-3">🏪</span>
+                            <p className="text-sm">Seleccione una sucursal del listado para ver su inventario</p>
                         </div>
                     )}
                 </div>
