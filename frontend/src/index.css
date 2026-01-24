@@ -9,7 +9,10 @@
   --bg-body: #f8fafc;
   --bg-card: #ffffff;
   /* Uniform sidebar color (softer slate, less harsh contrast) */
-  --bg-sidebar: #1f2937; /* slate-800 */
+  --bg-sidebar: #2563eb; /* blue-600, vibrante */
+  --sidebar-btn: #1d4ed8; /* blue-700, intenso */
+  --sidebar-btn-hover: #38bdf8; /* sky-400, acento vivo */
+  --sidebar-btn-active: #fff; /* blanco para texto activo */
   
   --primary: #334155;
   /* Slate 700 */
@@ -19,6 +22,10 @@
   /* Teal 500 - Elegant accent */
   --accent-hover: #0d9488;
   /* Teal 600 */
+  /* Alternate deeper sidebar/login-alike palette */
+  --sidebar-start: #f1f5f9; /* igual que bg-sidebar */
+  --sidebar-end: #f1f5f9;
+  --accent-strong: #14b8a6; /* teal 500 */
   --accent-light: #99f6e4;
   /* Teal 200 */
   --secondary: #64748b;
@@ -254,9 +261,16 @@ aside {
 
 /* Sidebar helper class to use in JSX (avoids tailwind bg overrides) */
 .sidebar {
-  background-color: var(--bg-sidebar) !important;
-  color: var(--text-sidebar) !important;
-  border-right: 1px solid rgba(255,255,255,0.03);
+  background: #1e3a5f !important;
+  color: #fff !important;
+  border-right: none;
+  border-top-right-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  /* Difuminado lateral real */
+  box-shadow: 16px 0 32px -8px rgba(30,58,95,0.18), 32px 0 64px -16px rgba(30,58,95,0.10);
+  backdrop-filter: none;
 }
 
 aside h1 {
@@ -271,25 +285,89 @@ aside h1 {
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 1rem;
-  border-radius: 0.375rem;
-  color: #a1a1aa;
+  border-radius: 0.5rem;
+  color: #fff;
   text-decoration: none;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  margin-bottom: 0.125rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
   transition: all 0.15s ease;
+  background: none;
+  border: none;
 }
 
 .sidebar-link:hover {
-  background-color: #27272a;
-  color: #e4e4e7;
+  background-color: var(--sidebar-btn-hover);
+  color: #1e293b;
 }
 
 .sidebar-link.active {
-  background-color: #27272a;
-  color: white;
-  border-left: 2px solid var(--accent);
-  margin-left: -2px;
+  background: #fff;
+  color: var(--bg-sidebar);
+  border-left: 4px solid var(--sidebar-btn-hover);
+  margin-left: -4px;
+  box-shadow: none;
+}
+
+.logo-section {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: none;
+}
+
+.sidebar .user-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: #e3eaf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e3a5f;
+  font-weight: 700;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 8px rgba(30,58,95,0.10);
+}
+
+.sidebar .user-info-box {
+  background: rgba(255,255,255,0.92);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 8px 0 rgba(30,58,95,0.08);
+}
+
+.sidebar .user-info-box .user-name {
+  color: #1e3a5f;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.sidebar .user-info-box .user-role {
+  color: #3a4a6b;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.sidebar .btn-logout {
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.sidebar .btn-logout:hover {
+  background-color: #b91c1c;
 }
 
 /* Tables - Clean Data Display */

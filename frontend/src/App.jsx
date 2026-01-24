@@ -22,12 +22,8 @@ const SidebarLink = ({ to, icon, label, requireAdmin = false }) => {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group w-full text-left
-        ${isActive
-          ? 'bg-slate-800 text-slate-100 border-l-4 border-teal-500 pl-2'
-          : 'text-slate-300 hover:text-white hover:bg-slate-800/40'
-        }`}>
-      <span className={`w-6 h-6 flex items-center justify-center ${isActive ? 'text-teal-400' : 'text-slate-400 group-hover:text-slate-200'}`}>{icon}</span>
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group w-full text-left ${isActive ? 'bg-gradient-to-r from-slate-800/60 to-slate-900/60 text-slate-100 border-l-4 border-teal-400 pl-4 shadow-[0_8px_24px_-12px_rgba(20,184,166,0.45)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/10'}`}>
+      <span className={`w-6 h-6 flex items-center justify-center ${isActive ? 'text-teal-300' : 'text-slate-400 group-hover:text-slate-200'}`}>{icon}</span>
       <span className="font-medium text-sm">{label}</span>
       {isActive && <span className="ml-auto w-2 h-2 bg-teal-400 rounded-full shadow-sm"></span>}
     </Link>
@@ -69,11 +65,11 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen flex bg-slate-50">
       {/* Sidebar */}
-      <aside className="w-64 fixed h-full z-40 transition-transform duration-200 sidebar">
-        {/* Logo Section (uniform color) */}
-        <div className="p-5 flex items-center gap-3 border-b border-slate-800">
-          <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center ring-1 ring-slate-700">
-            <div className="w-7 h-7 bg-teal-500 rounded-md flex items-center justify-center text-white font-bold text-sm">F</div>
+      <aside className="w-64 fixed h-full z-40 transition-transform duration-200 sidebar rounded-tr-2xl rounded-br-2xl overflow-hidden">
+        {/* Logo Section (styled like login panel) */}
+        <div className="p-6 flex items-center gap-3 logo-section">
+          <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center shadow-md">
+            <div className="w-7 h-7 bg-white/10 rounded-md flex items-center justify-center text-white font-bold text-sm">F</div>
           </div>
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-slate-100 m-0">
@@ -86,22 +82,18 @@ const Layout = ({ children }) => {
         <nav className="p-4 space-y-3">
           {/* User info */}
           <div className="mb-2 pb-2 border-b border-slate-800">
-            <div className="px-2 py-3 flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+            <div className="user-info-box">
+              <div className="user-avatar">
                 {(user.name || user.username || 'U').charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-slate-100">{user.name || user.username}</div>
-                {user.roles && user.roles.length > 0 && (
-                  <div className="text-xs text-slate-400">
-                    {user.roles.map(role => role.replace('ROLE_', '')).join(', ')}
-                  </div>
-                )}
+              <div>
+                <div className="user-name">{user.name || user.username || 'Usuario'}</div>
+                <div className="user-role">{(user.roles && user.roles.length > 0) ? user.roles.map(role => role.replace('ROLE_', '')).join(', ') : 'Rol'}</div>
               </div>
             </div>
             <button
               onClick={logout}
-              className="btn btn-secondary w-full px-3 py-2 mt-3 text-sm"
+              className="btn-logout"
             >
               Cerrar sesión
             </button>
