@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiCliente } from '../services/api';
+import { extractApiMessage } from '../utils/error';
 import { useAuth } from '../context/AuthContext';
 import ClientForm from './ClientForm';
 
@@ -45,10 +46,11 @@ const ClientList = () => {
                 await apiCliente.delete(`/clientes/${id}`);
                 fetchClients();
             } catch (error) {
+                console.error('Detalle técnico:', error);
                 if (error.response?.status === 403) {
                     alert('No tienes permisos para eliminar clientes');
                 } else {
-                    alert('Error al eliminar cliente');
+                    alert('No fue posible eliminar el cliente: ' + extractApiMessage(error));
                 }
             }
         }
@@ -64,12 +66,12 @@ const ClientList = () => {
             setShowForm(false);
             fetchClients();
         } catch (error) {
+            console.error('Detalle técnico:', error);
             if (error.response?.status === 403) {
                 alert('No tienes permisos para esta operación');
             } else {
-                alert('Error al guardar cliente');
+                alert('No fue posible guardar el cliente: ' + extractApiMessage(error));
             }
-            console.error(error);
         }
     };
 

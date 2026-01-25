@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { apiCatalogo } from '../services/api';
+import { extractApiMessage } from '../utils/error';
 
 const MedicineForm = ({ medicine, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -48,7 +49,9 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
             }
             onSave();
         } catch (err) {
-            alert('Error al guardar: ' + (err.response?.data?.message || err.message));
+            console.error('Detalle técnico:', err);
+            const msg = extractApiMessage(err);
+            alert('No fue posible guardar el medicamento: ' + msg);
         }
     };
 

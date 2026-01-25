@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiCatalogo, apiCliente, apiSucursal, apiVentas, apiInventario, apiReporte } from '../services/api';
+import { extractApiMessage } from '../utils/error';
 
 const SalesPOS = () => {
     const [step, setStep] = useState(1);
@@ -66,7 +67,8 @@ const SalesPOS = () => {
             setProducts(availableProducts);
         } catch (err) {
             console.error('Error loading branch inventory:', err);
-            alert('Error al cargar inventario de la sucursal');
+            const msg = extractApiMessage(err);
+            alert('No fue posible cargar el inventario de la sucursal: ' + msg);
         }
     };
 
@@ -165,8 +167,9 @@ const SalesPOS = () => {
             setProducts([]);
             setStep(1);
         } catch (err) {
-            console.error(err);
-            alert('Error al procesar la venta: ' + (err.response?.data?.message || err.message));
+            console.error('Detalle técnico:', err);
+            const msg = extractApiMessage(err);
+            alert('No fue posible procesar la venta: ' + msg);
         }
     };
 

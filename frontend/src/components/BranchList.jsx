@@ -3,6 +3,7 @@ import { apiSucursal, apiInventario } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BranchForm from './BranchForm';
 import StockAssignmentForm from './StockAssignmentForm';
+import { extractApiMessage } from '../utils/error';
 
 const BranchList = () => {
     const { isAdmin } = useAuth();
@@ -41,10 +42,11 @@ const BranchList = () => {
             setInventory(response.data);
             setLoading(false);
         } catch (err) {
-            console.error(err);
-            setInventory([]); // Clear on error
-            setLoading(false);
-        }
+        // Remover URLs
+        m = m.replace(/https?:\/\/[^\s]+/g, '');
+        // Limitar longitud
+        if (m.length > 240) m = m.substring(0, 240) + '...';
+        return m;
     };
 
     const handleSelectBranch = (branch) => {
@@ -92,14 +94,14 @@ const BranchList = () => {
 
     const handleAssignStock = async (stockData) => {
         try {
-            await apiInventario.post('', stockData);
-            setShowStockForm(false);
+                    const msg = extractApiMessage(err);
             fetchInventory(stockData.sucursalID);
             alert('Stock asignado correctamente');
         } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || err.message || 'Error al asignar stock';
-            alert('Error: ' + msg);
+            console.error('Detalle técnico:', err);
+            const raw = err.response?.data?.message || err.message;
+            const msg = sanitizeErrorMessage(raw);
+            alert('No se pudo asignar el stock: ' + msg);
         }
     };
 
@@ -135,14 +137,14 @@ const BranchList = () => {
                 });
             }
             
-            setShowStockForm(false);
-            setEditingInventory(null);
+                    const msg = extractApiMessage(err);
             fetchInventory(selectedBranch.id);
             alert('Stock agregado correctamente. Se han sumado las unidades al inventario actual.');
         } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || err.message || 'Error al actualizar inventario';
-            alert('Error: ' + msg);
+            console.error('Detalle técnico:', err);
+            const raw = err.response?.data?.message || err.message;
+            const msg = sanitizeErrorMessage(raw);
+            alert('No se pudo actualizar el inventario: ' + msg);
         }
     };
 

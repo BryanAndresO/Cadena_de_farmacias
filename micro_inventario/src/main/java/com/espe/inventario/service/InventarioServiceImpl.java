@@ -121,8 +121,8 @@ public class InventarioServiceImpl implements InventarioService {
         } catch (NumberFormatException e) {
             log.warn("ID de producto no numerico, saltando validacion global: {}", createDTO.getProductoID());
         } catch (Exception e) {
-            log.error("Error al validar stock con micro-catalogo: {}", e.getMessage(), e);
-            throw new RuntimeException("Error al validar stock con micro-catalogo: " + e.getMessage());
+            log.error("Error técnico validando stock en catálogo: {}", e.getMessage(), e);
+            throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
         }
 
         // Create inventory entity
@@ -197,8 +197,8 @@ public class InventarioServiceImpl implements InventarioService {
             } catch (NumberFormatException e) {
                 log.warn("ID de producto no numerico, saltando validacion global: {}", entity.getProductoID());
             } catch (Exception e) {
-                log.error("Error al validar stock con micro-catalogo: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al validar stock con micro-catalogo: " + e.getMessage());
+                log.error("Error técnico validando stock en catálogo: {}", e.getMessage(), e);
+                throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
             }
 
             // REGISTER TRANSACTION IN HISTORY
@@ -261,8 +261,8 @@ public class InventarioServiceImpl implements InventarioService {
                 catalogoClient.update(prodId, medicamento);
 
             } catch (Exception e) {
-                log.error("Error al validar stock con micro-catalogo durante ajuste: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al validar stock con micro-catalogo: " + e.getMessage());
+                log.error("Error técnico validando stock en catálogo durante ajuste: {}", e.getMessage(), e);
+                throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
             }
         }
 

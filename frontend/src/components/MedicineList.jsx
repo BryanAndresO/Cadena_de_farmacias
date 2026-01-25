@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiCatalogo } from '../services/api';
+import { extractApiMessage } from '../utils/error';
 import { useAuth } from '../context/AuthContext';
 
 import MedicineForm from './MedicineForm';
@@ -34,11 +35,13 @@ const MedicineList = () => {
             try {
                 await apiCatalogo.delete(`/medicamentos/${id}`);
                 setMedicines(medicines.filter(m => m.id !== id));
-            } catch (err) {
+                } catch (err) {
+                console.error('Detalle técnico:', err);
+                const msg = extractApiMessage(err);
                 if (err.response?.status === 403) {
                     alert('No tienes permisos para eliminar medicamentos');
                 } else {
-                    alert('Error al eliminar');
+                    alert('No fue posible eliminar el medicamento: ' + msg);
                 }
             }
         }
