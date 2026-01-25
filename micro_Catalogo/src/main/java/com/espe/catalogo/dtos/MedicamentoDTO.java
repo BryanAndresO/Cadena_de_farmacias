@@ -3,6 +3,7 @@ package com.espe.catalogo.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class MedicamentoDTO {
 
@@ -21,7 +22,7 @@ public class MedicamentoDTO {
     private Double precio;
 
     @NotNull(message = "El stock es obligatorio")
-    @Positive(message = "El stock debe ser mayor a 0")
+    @PositiveOrZero(message = "El stock no puede ser negativo")
     private Integer stock;
 
     public Long getId() {

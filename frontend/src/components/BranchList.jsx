@@ -123,14 +123,22 @@ const BranchList = () => {
 
     const handleUpdateInventory = async (stockData) => {
         try {
-            await apiInventario.put(`/${editingInventory.id}`, {
-                stock: parseInt(stockData.stock),
-                stockMinimo: parseInt(stockData.stockMinimo)
+            // When editing, use PATCH to ADD stock, not replace it
+            await apiInventario.patch(`/${editingInventory.id}/adjust`, {
+                adjustment: parseInt(stockData.stock) // This will be ADDED to current stock
             });
+            
+            // Update stock minimum separately if changed
+            if (stockData.stockMinimo !== editingInventory.stockMinimo) {
+                await apiInventario.put(`/${editingInventory.id}`, {
+                    stockMinimo: parseInt(stockData.stockMinimo)
+                });
+            }
+            
             setShowStockForm(false);
             setEditingInventory(null);
             fetchInventory(selectedBranch.id);
-            alert('Inventario actualizado correctamente');
+            alert('Stock agregado correctamente. Se han sumado las unidades al inventario actual.');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || err.message || 'Error al actualizar inventario';

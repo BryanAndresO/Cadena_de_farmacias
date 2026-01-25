@@ -76,3 +76,5 @@ export {
     apiInventario
 };
 
+// Export default api instance for direct use
+export default api;

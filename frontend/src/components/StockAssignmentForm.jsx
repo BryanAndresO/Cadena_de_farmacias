@@ -28,7 +28,7 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
         if (editingItem) {
             setForm({
                 productoId: editingItem.productoId,
-                stock: editingItem.cantidad,
+                stock: 0, // Reset to 0 for adding more stock
                 stockMinimo: editingItem.stockMinimo || 5
             });
         }
@@ -106,7 +106,9 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                     </div>
 
                     <div>
-                        <label className="block text-neutral-700 text-sm font-medium mb-2">Cantidad a Asignar</label>
+                        <label className="block text-neutral-700 text-sm font-medium mb-2">
+                            {editingItem ? 'Cantidad a Agregar al Stock Actual' : 'Cantidad a Asignar'}
+                        </label>
                         <input
                             type="number"
                             name="stock"
@@ -116,6 +118,11 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                             min="1"
                             required
                         />
+                        {editingItem && (
+                            <p className="text-xs text-teal-600 mt-1 font-medium">
+                                Stock actual: {editingItem.cantidad} → Stock nuevo: {editingItem.cantidad + parseInt(form.stock || 0)}
+                            </p>
+                        )}
                     </div>
 
                     <div>
