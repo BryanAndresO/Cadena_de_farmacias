@@ -1,4 +1,5 @@
-version: '3.8'
+# Docker Compose configuration for Pharmacy Chain Microservices
+# Includes: Databases, OAuth2 Server, API Gateway, Microservices, and Frontend
 
 services:
   # ==================== DATABASES ====================
