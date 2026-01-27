@@ -42,11 +42,10 @@ const BranchList = () => {
             setInventory(response.data);
             setLoading(false);
         } catch (err) {
-        // Remover URLs
-        m = m.replace(/https?:\/\/[^\s]+/g, '');
-        // Limitar longitud
-        if (m.length > 240) m = m.substring(0, 240) + '...';
-        return m;
+            console.error('Error fetching inventory:', err);
+            setInventory([]);
+            setLoading(false);
+            return;
     };
 
     const handleSelectBranch = (branch) => {
@@ -94,13 +93,14 @@ const BranchList = () => {
 
     const handleAssignStock = async (stockData) => {
         try {
-                    const msg = extractApiMessage(err);
+            // API: assign new stock to a branch inventory
+            await apiInventario.post('/', stockData);
             fetchInventory(stockData.sucursalID);
             alert('Stock asignado correctamente');
         } catch (err) {
             console.error('Detalle técnico:', err);
             const raw = err.response?.data?.message || err.message;
-            const msg = sanitizeErrorMessage(raw);
+            const msg = extractApiMessage({ response: { data: { message: raw } } });
             alert('No se pudo asignar el stock: ' + msg);
         }
     };
@@ -137,13 +137,12 @@ const BranchList = () => {
                 });
             }
             
-                    const msg = extractApiMessage(err);
             fetchInventory(selectedBranch.id);
             alert('Stock agregado correctamente. Se han sumado las unidades al inventario actual.');
         } catch (err) {
             console.error('Detalle técnico:', err);
             const raw = err.response?.data?.message || err.message;
-            const msg = sanitizeErrorMessage(raw);
+            const msg = extractApiMessage({ response: { data: { message: raw } } });
             alert('No se pudo actualizar el inventario: ' + msg);
         }
     };
