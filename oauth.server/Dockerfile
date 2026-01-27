@@ -8,6 +8,8 @@ COPY .mvn .mvn
 COPY pom.xml .
 
 # Download dependencies
+# Ensure the Maven wrapper is executable (fixes exit code 126 on some filesystems)
+RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline -B
 
 # Copy source code
