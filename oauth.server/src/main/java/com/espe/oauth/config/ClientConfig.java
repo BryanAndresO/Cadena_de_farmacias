@@ -29,8 +29,11 @@ public class ClientConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.PASSWORD) // Enabled for Postman
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/gateway-client")
                 .redirectUri("http://localhost:8080/login/oauth2/code/gateway-client")
+                .redirectUri("https://oauth.pstmn.io/v1/callback") // Postman Web
+                .redirectUri("https://oauth.pstmn.io/v1/browser-callback") // Postman Desktop
                 .postLogoutRedirectUri("http://127.0.0.1:8080/oauth2/authorization/gateway-client")
                 .postLogoutRedirectUri("http://localhost:8080/oauth2/authorization/gateway-client")
                 .scope(OidcScopes.OPENID)
@@ -44,23 +47,23 @@ public class ClientConfig {
 
         // SPA public client (PKCE) - used by the frontend Single Page App
         RegisteredClient spaClient = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId("spa-client")
-            .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .redirectUri("http://127.0.0.1:5173/oauth2/callback")
-            .redirectUri("http://localhost:5173/oauth2/callback")
-            .redirectUri("http://localhost:8080/oauth2/callback")
-            .postLogoutRedirectUri("http://127.0.0.1:5173/")
-            .postLogoutRedirectUri("http://localhost:5173/")
-            .scope(OidcScopes.OPENID)
-            .scope(OidcScopes.PROFILE)
-            .scope("read")
-            .scope("write")
-            .clientSettings(ClientSettings.builder()
-                .requireProofKey(true) // Require PKCE for public SPA client
-                .requireAuthorizationConsent(false)
-                .build())
-            .build();
+                .clientId("spa-client")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("http://127.0.0.1:5173/oauth2/callback")
+                .redirectUri("http://localhost:5173/oauth2/callback")
+                .redirectUri("http://localhost:8080/oauth2/callback")
+                .postLogoutRedirectUri("http://127.0.0.1:5173/")
+                .postLogoutRedirectUri("http://localhost:5173/")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("read")
+                .scope("write")
+                .clientSettings(ClientSettings.builder()
+                        .requireProofKey(true) // Require PKCE for public SPA client
+                        .requireAuthorizationConsent(false)
+                        .build())
+                .build();
 
         return new InMemoryRegisteredClientRepository(gatewayClient, spaClient);
     }
