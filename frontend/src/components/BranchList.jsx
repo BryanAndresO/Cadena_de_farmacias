@@ -45,7 +45,7 @@ const BranchList = () => {
             console.error('Error fetching inventory:', err);
             setInventory([]);
             setLoading(false);
-            return;
+        }
     };
 
     const handleSelectBranch = (branch) => {
