@@ -283,7 +283,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: abcd
-      # OAuth2 dynamic configuration
+      # OAuth2 Issuer URI (should match public URL that clients use to access this server)
+      OAUTH2_ISSUER_URI: ${OAUTH_ISSUER_URI:-http://localhost:9000}
+      # OAuth2 dynamic configuration for redirect URIs
       OAUTH2_CLIENT_GATEWAY_BASE_URL: ${GATEWAY_PUBLIC_URL:-http://localhost:8080}
       OAUTH2_CLIENT_FRONTEND_BASE_URL: ${FRONTEND_PUBLIC_URL:-http://localhost:5173}
       OAUTH2_CLIENT_PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}

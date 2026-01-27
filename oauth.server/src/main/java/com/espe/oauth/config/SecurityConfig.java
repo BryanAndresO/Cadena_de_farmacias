@@ -73,7 +73,9 @@ public class SecurityConfig {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
+            @org.springframework.beans.factory.annotation.Value("${oauth2.client.gateway.base-url:http://localhost:8080}") String gatewayUrl)
+            throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/status").permitAll()
@@ -84,7 +86,7 @@ public class SecurityConfig {
                 // server filter chain
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("http://localhost:8080/"))
+                        .defaultSuccessUrl(gatewayUrl + "/"))
                 .userDetailsService(userDetailsService);
 
         return http.build();
@@ -133,11 +135,14 @@ public class SecurityConfig {
 
     /**
      * Authorization Server settings (issuer URL)
+     * The issuer URL should match the public URL used by clients to access this
+     * server
      */
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
+    public AuthorizationServerSettings authorizationServerSettings(
+            @org.springframework.beans.factory.annotation.Value("${oauth2.issuer.uri:http://localhost:9000}") String issuerUri) {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer(issuerUri)
                 .build();
     }
 
@@ -155,7 +160,7 @@ public class SecurityConfig {
                     List<String> roles = authorities.stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.toList());
-                    
+
                     // Add roles to the JWT claims
                     context.getClaims().claim("roles", roles);
                 }

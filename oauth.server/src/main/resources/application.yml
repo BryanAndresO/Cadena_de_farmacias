@@ -20,7 +20,20 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+
+# OAuth2 Configuration (from environment variables)
+oauth2:
+  issuer:
+    uri: ${OAUTH2_ISSUER_URI:http://localhost:9000}
+  client:
+    gateway:
+      base-url: ${OAUTH2_CLIENT_GATEWAY_BASE_URL:http://localhost:8080}
+    frontend:
+      base-url: ${OAUTH2_CLIENT_FRONTEND_BASE_URL:http://localhost:5173}
+    public:
+      base-url: ${OAUTH2_CLIENT_PUBLIC_BASE_URL:}

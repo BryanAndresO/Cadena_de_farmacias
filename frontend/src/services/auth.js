@@ -37,7 +37,7 @@ export async function login() {
     response_type: 'code',
     client_id: 'spa-client',
     scope: 'openid profile read write',
-    redirect_uri: (window.location.hostname === 'localhost' ? 'http://localhost:5173' : '') + '/oauth2/callback',
+    redirect_uri: window.location.origin + '/oauth2/callback',
     code_challenge: codeChallenge,
     code_challenge_method: 'S256'
   });
@@ -59,7 +59,7 @@ export async function handleCallback() {
   const bodyParams = new URLSearchParams();
   bodyParams.append('grant_type', 'authorization_code');
   bodyParams.append('code', code);
-  bodyParams.append('redirect_uri', (window.location.hostname === 'localhost' ? 'http://localhost:5173' : '') + '/oauth2/callback');
+  bodyParams.append('redirect_uri', window.location.origin + '/oauth2/callback');
   bodyParams.append('client_id', 'spa-client');
   bodyParams.append('code_verifier', codeVerifier);
 
@@ -79,14 +79,14 @@ export async function logout() {
     // Call the backend logout endpoint to get the OAuth2 provider logout URL
     // This will also invalidate the gateway session
     const resp = await axios.post(API_BASE + '/api/logout', {}, { withCredentials: true });
-    
+
     // Clear all local storage
     localStorage.clear();
     sessionStorage.clear();
 
     // Get the logout URL from the response (includes id_token_hint for proper provider logout)
     const logoutUrl = resp?.data?.logoutUrl || '/oauth2/authorization/gateway-client';
-    
+
     // Redirect to the OAuth2 provider logout endpoint
     window.location.href = logoutUrl;
   } catch (err) {
