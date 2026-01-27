@@ -20,7 +20,7 @@ spring:
         # Not using issuer-uri to avoid issuer validation mismatch
         provider:
           spring:
-            authorization-uri: http://localhost:9000/oauth2/authorize
+            authorization-uri: ${OAUTH_PUBLIC_URL:http://localhost:9000}/oauth2/authorize
             token-uri: http://oauth-server:9000/oauth2/token
             jwk-set-uri: http://oauth-server:9000/oauth2/jwks
             user-info-uri: http://oauth-server:9000/userinfo

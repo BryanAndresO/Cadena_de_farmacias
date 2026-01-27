@@ -282,6 +282,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: abcd
+      # OAuth2 dynamic configuration
+      OAUTH2_CLIENT_GATEWAY_BASE_URL: ${GATEWAY_PUBLIC_URL:-http://localhost:8080}
+      OAUTH2_CLIENT_FRONTEND_BASE_URL: ${FRONTEND_PUBLIC_URL:-http://localhost:5173}
+      OAUTH2_CLIENT_PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
     depends_on:
       auth-db:
         condition: service_healthy
@@ -296,7 +300,9 @@ services:
     container_name: gateway
     ports:
       - "8080:8080"
-    
+    environment:
+      # OAuth2 dynamic configuration
+      OAUTH_PUBLIC_URL: ${OAUTH_PUBLIC_URL:-http://localhost:9000}
     depends_on:
       - oauth-server
       - micro-catalogo
