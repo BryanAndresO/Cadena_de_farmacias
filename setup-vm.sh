@@ -48,11 +48,11 @@ OAUTH2_CLIENT_FRONTEND_BASE_URL=http://$EXTERNAL_IP:8080
 OAUTH2_CLIENT_PUBLIC_BASE_URL=http://$EXTERNAL_IP:8080
 EOF
 
-echo "✅ Archivo .env generado exitosamente"
+echo " Archivo .env generado exitosamente"
 echo ""
 echo "📋 Configuración aplicada:"
 echo "   IP Externa: $EXTERNAL_IP"
 echo "   Gateway:    http://$EXTERNAL_IP:8080"
 echo "   OAuth:      http://$EXTERNAL_IP:9000"
 echo ""
-echo "🚀 Puedes iniciar la aplicación con: docker compose up -d"
+echo "Puedes iniciar la aplicación con: docker compose up -d"
