@@ -27,9 +27,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration
 @EnableWebSecurity
@@ -69,10 +74,53 @@ public class SecurityConfig {
     }
 
     /**
-     * Security filter chain for authentication (login form)
+     * Security filter chain for REST API endpoints (JWT protected)
+     * Requires ROLE_ADMIN for user management
      */
     @Bean
     @Order(2)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer((resourceServer) -> resourceServer
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    /**
+     * JwtAuthenticationConverter that extracts roles from the 'roles' claim
+     */
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            // Get default authorities (SCOPE_xxx)
+            JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
+            Collection<GrantedAuthority> authorities = new java.util.ArrayList<>(defaultConverter.convert(jwt));
+
+            // Add roles from the 'roles' claim
+            List<String> roles = jwt.getClaimAsStringList("roles");
+            if (roles != null) {
+                roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .forEach(authorities::add);
+            }
+
+            return authorities;
+        });
+        return converter;
+    }
+
+    /**
+     * Security filter chain for authentication (login form)
+     */
+    @Bean
+    @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
             @org.springframework.beans.factory.annotation.Value("${oauth2.client.gateway.base-url:http://localhost:8080}") String gatewayUrl)
             throws Exception {

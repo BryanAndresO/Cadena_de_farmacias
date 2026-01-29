@@ -289,6 +289,10 @@ services:
       OAUTH2_CLIENT_GATEWAY_BASE_URL: ${GATEWAY_PUBLIC_URL:-http://localhost:8080}
       OAUTH2_CLIENT_FRONTEND_BASE_URL: ${FRONTEND_PUBLIC_URL:-http://localhost:5173}
       OAUTH2_CLIENT_PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+      # SEC-001 FIX: Credenciales de usuarios desde .env (NO tienen valores por defecto)
+      # IMPORTANTE: Estas variables DEBEN estar definidas en el archivo .env
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      USER_PASSWORD: ${USER_PASSWORD}
     depends_on:
       auth-db:
         condition: service_healthy

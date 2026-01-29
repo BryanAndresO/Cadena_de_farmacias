@@ -36,6 +36,13 @@ spring:
           predicates:
             - Path=/oauth2/**,/.well-known/**
 
+        # Ruta para gestión de usuarios (oauth-server)
+        - id: users-management
+          order: 0
+          uri: http://oauth-server:9000
+          predicates:
+            - Path=/api/users/**
+
         - id: catalogo-service
           uri: http://micro-catalogo:8080
           predicates:
