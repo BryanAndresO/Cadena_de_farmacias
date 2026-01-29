@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: auth_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: abcd
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "5433:5432"
     volumes:
@@ -28,9 +28,9 @@ services:
     container_name: mysql-catalogo
     environment:
       MYSQL_DATABASE: catalogodb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3309:3306"
     volumes:
@@ -48,9 +48,9 @@ services:
     container_name: mysql-sucursal
     environment:
       MYSQL_DATABASE: sucursalesdb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3310:3306"
     volumes:
@@ -68,9 +68,9 @@ services:
     container_name: mysql-cliente
     environment:
       MYSQL_DATABASE: clientesdb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3311:3306"
     volumes:
@@ -88,9 +88,9 @@ services:
     container_name: mysql-ventas
     environment:
       MYSQL_DATABASE: ventasdb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3312:3306"
     volumes:
@@ -108,9 +108,9 @@ services:
     container_name: mysql-reporte
     environment:
       MYSQL_DATABASE: reportesdb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3313:3306"
     volumes:
@@ -128,9 +128,9 @@ services:
     container_name: mysql-inventario
     environment:
       MYSQL_DATABASE: inventariodb
-      MYSQL_ROOT_PASSWORD: abcd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
       MYSQL_USER: AppRoot
-      MYSQL_PASSWORD: abcd
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme} # SEC-007 FIX
     ports:
       - "3314:3306"
     volumes:
@@ -155,7 +155,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://catalogo-db:3306/catalogodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       catalogo-db:
@@ -176,7 +176,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://sucursal-db:3306/sucursalesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       sucursal-db:
@@ -197,7 +197,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://cliente-db:3306/clientesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       cliente-db:
@@ -218,7 +218,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://ventas-db:3306/ventasdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       ventas-db:
@@ -239,7 +239,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://reporte-db:3306/reportesdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
     depends_on:
       reporte-db:
@@ -260,7 +260,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://inventario-db:3306/inventariodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: AppRoot
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth-server:9000/oauth2/jwks
       CATALOGO_SERVICE_URL: http://micro-catalogo:8080
     depends_on:
@@ -282,7 +282,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: abcd
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-changeme}
       # OAuth2 Issuer URI (should match public URL that clients use to access this server)
       OAUTH2_ISSUER_URI: ${OAUTH_ISSUER_URI:-http://localhost:9000}
       # OAuth2 dynamic configuration for redirect URIs

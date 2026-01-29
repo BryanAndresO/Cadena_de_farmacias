@@ -53,6 +53,9 @@ USER_PASSWORD=user123
 
 # SEC-002/003 FIX: OAuth2 Client Secret (CAMBIAR EN PRODUCCION REAL)
 OAUTH_CLIENT_SECRET=my-secure-secret-key-2024
+
+# SEC-007 FIX: Contraseña de bases de datos (CAMBIAR EN PRODUCCION REAL)
+DB_PASSWORD=prod-db-password-2024
 EOF
 
 echo "Archivo .env generado exitosamente"

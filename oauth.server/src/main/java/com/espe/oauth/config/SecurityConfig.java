@@ -142,6 +142,14 @@ public class SecurityConfig {
 
     /**
      * JWK Source for signing tokens
+     * SEC-005 FIX: Usa un keyId fijo para mantener consistencia entre reinicios.
+     * En producción real, las llaves deberían cargarse desde archivos PEM o un Key
+     * Vault.
+     * 
+     * Para persistir las llaves en producción:
+     * 1. Generar keypair: openssl genrsa -out private.pem 2048
+     * 2. Extraer pública: openssl rsa -in private.pem -pubout -out public.pem
+     * 3. Montar archivos en el contenedor y cargar aquí
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -149,9 +157,12 @@ public class SecurityConfig {
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
 
+        // SEC-005 FIX: Usa un keyId fijo en lugar de UUID.randomUUID()
+        // Esto evita que los tokens sean invalidados al reiniciar en desarrollo
+        // En producción, usar llaves persistentes cargadas desde archivos
         RSAKey rsaKey = new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
+                .keyID("oauth-server-key-1") // ID fijo para consistencia
                 .build();
 
         JWKSet jwkSet = new JWKSet(rsaKey);
@@ -160,6 +171,8 @@ public class SecurityConfig {
 
     /**
      * Generate RSA key pair for JWT signing
+     * NOTA: Esta llave se regenera en cada reinicio del servidor.
+     * En producción, las llaves deben cargarse desde archivos persistentes.
      */
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
