@@ -195,14 +195,13 @@ export default function UserManagement() {
                                             </div>
                                             <div className="ml-4">
                                                 <div className="text-sm font-medium text-slate-900">{user.username}</div>
-                                                <div className="text-sm text-slate-500">ID: {user.id}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'ROLE_ADMIN'
-                                                ? 'bg-purple-100 text-purple-800'
-                                                : 'bg-blue-100 text-blue-800'
+                                            ? 'bg-purple-100 text-purple-800'
+                                            : 'bg-blue-100 text-blue-800'
                                             }`}>
                                             {user.role.replace('ROLE_', '')}
                                         </span>
@@ -211,8 +210,8 @@ export default function UserManagement() {
                                         <button
                                             onClick={() => handleToggleStatus(user)}
                                             className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer transition-colors ${user.enabled
-                                                    ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                                    : 'bg-red-100 text-red-800 hover:bg-red-200'
+                                                ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                                : 'bg-red-100 text-red-800 hover:bg-red-200'
                                                 }`}
                                         >
                                             {user.enabled ? 'Activo' : 'Inactivo'}

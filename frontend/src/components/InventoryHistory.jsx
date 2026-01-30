@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import api, { apiCatalogo, apiSucursal } from '../services/api';
 
 function InventoryHistory() {
   const [movements, setMovements] = useState([]);
@@ -8,15 +8,46 @@ function InventoryHistory() {
   const [filterType, setFilterType] = useState('all'); // all, sucursal, producto
   const [filterId, setFilterId] = useState('');
 
+  // Catalogs for names
+  const [products, setProducts] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [productNames, setProductNames] = useState({});
+  const [branchNames, setBranchNames] = useState({});
+
+  useEffect(() => {
+    loadCatalogs();
+  }, []);
+
   useEffect(() => {
     loadMovements();
   }, [filterType, filterId]);
+
+  const loadCatalogs = async () => {
+    try {
+      const [prodRes, branchRes] = await Promise.all([
+        apiCatalogo.get('/medicamentos'),
+        apiSucursal.get('/sucursales/')
+      ]);
+      setProducts(prodRes.data);
+      setBranches(branchRes.data);
+
+      const pNames = {};
+      prodRes.data.forEach(p => { pNames[p.id] = p.nombre; });
+      setProductNames(pNames);
+
+      const bNames = {};
+      branchRes.data.forEach(b => { bNames[b.id] = b.nombre; });
+      setBranchNames(bNames);
+    } catch (err) {
+      console.error('Error loading catalogs:', err);
+    }
+  };
 
   const loadMovements = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       let response;
       if (filterType === 'all') {
         response = await api.get('/api/inventario/movimientos');
@@ -27,7 +58,7 @@ function InventoryHistory() {
       } else {
         response = await api.get('/api/inventario/movimientos');
       }
-      
+
       setMovements(response.data);
     } catch (err) {
       console.error('Error loading movements:', err);
@@ -115,15 +146,19 @@ function InventoryHistory() {
           {(filterType === 'sucursal' || filterType === 'producto') && (
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                ID {filterType === 'sucursal' ? 'de Sucursal' : 'de Producto'}
+                {filterType === 'sucursal' ? 'Sucursal' : 'Producto'}
               </label>
-              <input
-                type="text"
+              <select
                 value={filterId}
                 onChange={(e) => setFilterId(e.target.value)}
-                placeholder={`Ingrese ID ${filterType === 'sucursal' ? 'de sucursal' : 'de producto'}`}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
+              >
+                <option value="">-- Seleccionar --</option>
+                {filterType === 'sucursal'
+                  ? branches.map(b => <option key={b.id} value={b.id}>{b.nombre}</option>)
+                  : products.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)
+                }
+              </select>
             </div>
           )}
           <div className="flex items-end">
@@ -178,8 +213,8 @@ function InventoryHistory() {
                         {getTipoMovimientoLabel(mov.tipoMovimiento)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-900">{mov.sucursalId}</td>
-                    <td className="px-4 py-3 text-sm text-slate-900">{mov.productoId}</td>
+                    <td className="px-4 py-3 text-sm text-slate-900">{branchNames[mov.sucursalId] || `Sucursal #${mov.sucursalId}`}</td>
+                    <td className="px-4 py-3 text-sm text-slate-900">{productNames[mov.productoId] || `Producto #${mov.productoId}`}</td>
                     <td className={`px-4 py-3 text-sm text-right font-semibold ${mov.cantidad > 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {mov.cantidad > 0 ? '+' : ''}{mov.cantidad}
                     </td>

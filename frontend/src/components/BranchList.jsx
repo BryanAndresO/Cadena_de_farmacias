@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiSucursal, apiInventario } from '../services/api';
+import { apiSucursal, apiInventario, apiCatalogo } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BranchForm from './BranchForm';
 import StockAssignmentForm from './StockAssignmentForm';
@@ -18,11 +18,26 @@ const BranchList = () => {
 
     // Stock Assignment State
     const [showStockForm, setShowStockForm] = useState(false);
+
+    // Product names cache
+    const [productNames, setProductNames] = useState({});
     const [editingInventory, setEditingInventory] = useState(null);
 
     useEffect(() => {
         fetchBranches();
+        fetchProducts();
     }, []);
+
+    const fetchProducts = async () => {
+        try {
+            const response = await apiCatalogo.get('/medicamentos');
+            const names = {};
+            response.data.forEach(p => { names[p.id] = p.nombre; });
+            setProductNames(names);
+        } catch (err) {
+            console.error('Error loading products:', err);
+        }
+    };
 
     const fetchBranches = async () => {
         try {
@@ -96,6 +111,8 @@ const BranchList = () => {
             // API: assign new stock to a branch inventory
             await apiInventario.post('/', stockData);
             fetchInventory(stockData.sucursalID);
+            setShowStockForm(false);
+            setEditingInventory(null);
             alert('Stock asignado correctamente');
         } catch (err) {
             console.error('Detalle técnico:', err);
@@ -129,15 +146,17 @@ const BranchList = () => {
             await apiInventario.patch(`/${editingInventory.id}/adjust`, {
                 adjustment: parseInt(stockData.stock) // This will be ADDED to current stock
             });
-            
+
             // Update stock minimum separately if changed
             if (stockData.stockMinimo !== editingInventory.stockMinimo) {
                 await apiInventario.put(`/${editingInventory.id}`, {
                     stockMinimo: parseInt(stockData.stockMinimo)
                 });
             }
-            
+
             fetchInventory(selectedBranch.id);
+            setShowStockForm(false);
+            setEditingInventory(null);
             alert('Stock agregado correctamente. Se han sumado las unidades al inventario actual.');
         } catch (err) {
             console.error('Detalle técnico:', err);
@@ -214,7 +233,7 @@ const BranchList = () => {
                                 <table className="w-full text-left bg-white">
                                     <thead className="bg-neutral-50">
                                         <tr>
-                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Producto ID</th>
+                                            <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Producto</th>
                                             <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Stock Disponible</th>
                                             <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Stock Mínimo</th>
                                             <th className="p-3 font-medium text-neutral-600 text-xs uppercase">Estado</th>
@@ -224,7 +243,7 @@ const BranchList = () => {
                                     <tbody className="divide-y divide-neutral-100">
                                         {inventory.length > 0 ? inventory.map(item => (
                                             <tr key={item.id} className="hover:bg-neutral-50">
-                                                <td className="p-3 text-neutral-700 text-sm">#{item.productoId}</td>
+                                                <td className="p-3 text-neutral-700 text-sm font-medium">{productNames[item.productoId] || `Producto #${item.productoId}`}</td>
                                                 <td className="p-3 font-mono font-medium text-neutral-800 text-sm">{item.cantidad}</td>
                                                 <td className="p-3 text-neutral-600 text-sm">{item.stockMinimo || 0}</td>
                                                 <td className="p-3">

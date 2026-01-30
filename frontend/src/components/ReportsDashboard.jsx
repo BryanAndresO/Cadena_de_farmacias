@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiReporte } from '../services/api';
+import { apiReporte, apiCatalogo, apiSucursal } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const ReportsDashboard = () => {
@@ -9,12 +9,38 @@ const ReportsDashboard = () => {
     const [activeTab, setActiveTab] = useState('sales');
     const [error, setError] = useState(null);
 
+    // Catalogs for names
+    const [productNames, setProductNames] = useState({});
+    const [branchNames, setBranchNames] = useState({});
+
     useEffect(() => {
         if (isAdmin()) {
+            fetchCatalogs();
             fetchSalesReports();
             fetchInventoryReports();
         }
     }, []);
+
+    const fetchCatalogs = async () => {
+        try {
+            const [prodRes, branchRes] = await Promise.all([
+                apiCatalogo.get('/medicamentos'),
+                apiSucursal.get('/sucursales/')
+            ]);
+
+            const pNames = {};
+            prodRes.data.forEach(p => { pNames[p.id] = p.nombre; });
+            setProductNames(pNames);
+
+            const bNames = {};
+            branchRes.data.forEach(b => { bNames[b.id] = b.nombre; });
+            setBranchNames(bNames);
+        } catch (err) {
+            console.error('Error loading catalogs:', err);
+        }
+    };
+
+
 
     const fetchSalesReports = async () => {
         try {
@@ -75,21 +101,31 @@ const ReportsDashboard = () => {
             <div className="flex gap-2 mb-6">
                 <button
                     onClick={() => setActiveTab('sales')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'sales' 
-                        ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-md' 
+                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'sales'
+                        ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-md'
                         : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
                 >
                     📊 Reportes de Ventas
                 </button>
                 <button
                     onClick={() => setActiveTab('inventory')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'inventory' 
-                        ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-md' 
+                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'inventory'
+                        ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-md'
                         : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
                 >
                     📦 Reportes de Inventario
                 </button>
             </div>
+
+            {/* Description for inventory tab */}
+            {activeTab === 'inventory' && (
+                <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-4">
+                    <p className="text-teal-800 text-sm flex items-center gap-2">
+                        <span>📌</span>
+                        <span><strong>Snapshots históricos</strong> del estado del inventario por sucursal y producto. Estos registros muestran cómo estaba el stock en momentos específicos.</span>
+                    </p>
+                </div>
+            )}
 
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
@@ -101,15 +137,15 @@ const ReportsDashboard = () => {
                                         <th className="p-3 font-medium text-neutral-600 text-sm">ID</th>
                                         <th className="p-3 font-medium text-neutral-600 text-sm">Fecha</th>
                                         <th className="p-3 font-medium text-neutral-600 text-sm">Total Ventas</th>
-                                        <th className="p-3 font-medium text-neutral-600 text-sm">Sucursal ID</th>
+                                        <th className="p-3 font-medium text-neutral-600 text-sm">Sucursal</th>
                                     </>
                                 ) : (
                                     <>
                                         <th className="p-3 font-medium text-neutral-600 text-sm">ID</th>
                                         <th className="p-3 font-medium text-neutral-600 text-sm">Fecha</th>
-                                        <th className="p-3 font-medium text-neutral-600 text-sm">Medicamento ID</th>
+                                        <th className="p-3 font-medium text-neutral-600 text-sm">Medicamento</th>
                                         <th className="p-3 font-medium text-neutral-600 text-sm">Stock</th>
-                                        <th className="p-3 font-medium text-neutral-600 text-sm">Sucursal ID</th>
+                                        <th className="p-3 font-medium text-neutral-600 text-sm">Sucursal</th>
                                     </>
                                 )}
                             </tr>
@@ -122,13 +158,13 @@ const ReportsDashboard = () => {
                                     {activeTab === 'sales' ? (
                                         <>
                                             <td className="p-3 text-neutral-800 font-medium text-sm">${report.totalVentas?.toFixed(2)}</td>
-                                            <td className="p-3 text-neutral-600 text-sm">{report.sucursalId}</td>
+                                            <td className="p-3 text-neutral-600 text-sm">{branchNames[report.sucursalId] || `Sucursal #${report.sucursalId}`}</td>
                                         </>
                                     ) : (
                                         <>
-                                            <td className="p-3 text-neutral-600 text-sm">{report.medicamentoId}</td>
+                                            <td className="p-3 text-neutral-600 text-sm">{productNames[report.medicamentoId] || `Producto #${report.medicamentoId}`}</td>
                                             <td className="p-3 text-neutral-800 font-medium text-sm">{report.stock}</td>
-                                            <td className="p-3 text-neutral-600 text-sm">{report.sucursalId}</td>
+                                            <td className="p-3 text-neutral-600 text-sm">{branchNames[report.sucursalId] || `Sucursal #${report.sucursalId}`}</td>
                                         </>
                                     )}
                                 </tr>
