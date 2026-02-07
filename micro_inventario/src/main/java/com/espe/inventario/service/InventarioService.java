@@ -5,8 +5,13 @@ import com.espe.inventario.dto.InventarioDTO;
 import com.espe.inventario.dto.InventarioUpdateDTO;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface InventarioService {
     List<InventarioDTO> findAll();
+
+    Page<InventarioDTO> findAll(Pageable pageable);
 
     InventarioDTO findById(Long id);
 

@@ -21,9 +21,8 @@ public class MedicamentoDTO {
     @Positive(message = "El precio debe ser mayor a 0")
     private Double precio;
 
-    @NotNull(message = "El stock es obligatorio")
-    @PositiveOrZero(message = "El stock no puede ser negativo")
-    private Integer stock;
+    private String concentracion;
+    private String presentacion;
 
     public Long getId() {
         return id;
@@ -65,11 +64,19 @@ public class MedicamentoDTO {
         this.precio = precio;
     }
 
-    public Integer getStock() {
-        return stock;
+    public String getConcentracion() {
+        return concentracion;
     }
 
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setConcentracion(String concentracion) {
+        this.concentracion = concentracion;
+    }
+
+    public String getPresentacion() {
+        return presentacion;
+    }
+
+    public void setPresentacion(String presentacion) {
+        this.presentacion = presentacion;
     }
 }

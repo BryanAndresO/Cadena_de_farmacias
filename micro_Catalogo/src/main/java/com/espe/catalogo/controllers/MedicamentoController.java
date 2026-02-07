@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/medicamentos")
 public class MedicamentoController {
@@ -23,6 +27,14 @@ public class MedicamentoController {
     @GetMapping({ "", "/" })
     public ResponseEntity<List<MedicamentoDTO>> listar() {
         return ResponseEntity.ok(service.buscarTodos());
+    }
+
+    @GetMapping("/pagina")
+    public ResponseEntity<Page<MedicamentoDTO>> listarPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(service.buscarTodos(pageable));
     }
 
     @GetMapping("/{id}")

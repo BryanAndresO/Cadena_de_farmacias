@@ -8,7 +8,8 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
         laboratorio: '',
         descripcion: '',
         precio: '',
-        stock: ''
+        concentracion: '',
+        presentacion: ''
     });
 
     // Populate form if editing
@@ -19,7 +20,8 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
                 laboratorio: medicine.laboratorio,
                 descripcion: medicine.descripcion || '',
                 precio: medicine.precio,
-                stock: medicine.stock
+                concentracion: medicine.concentracion || '',
+                presentacion: medicine.presentacion || ''
             });
         }
     }, [medicine]);
@@ -36,8 +38,7 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
         try {
             const payload = {
                 ...formData,
-                precio: parseFloat(formData.precio),
-                stock: parseInt(formData.stock)
+                precio: parseFloat(formData.precio)
             };
 
             if (medicine) {
@@ -76,8 +77,14 @@ const MedicineForm = ({ medicine, onSave, onCancel }) => {
                     <input type="number" step="0.01" name="precio" value={formData.precio} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
                 </div>
                 <div>
-                    <label className="block text-neutral-600 text-sm mb-1">Stock Inicial</label>
-                    <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" required />
+                    <label className="block text-neutral-600 text-sm mb-1">Concentración</label>
+                    <input name="concentracion" value={formData.concentracion} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" placeholder="Ej. 500mg" />
+                    <p className="text-xs text-neutral-400 mt-1">Ej. 500mg, 10ml, 5%</p>
+                </div>
+                <div>
+                    <label className="block text-neutral-600 text-sm mb-1">Presentación</label>
+                    <input name="presentacion" value={formData.presentacion} onChange={handleChange} className="w-full border border-neutral-200 p-2 rounded text-sm focus:border-neutral-400 focus:outline-none" placeholder="Ej. Caja x 10" />
+                    <p className="text-xs text-neutral-400 mt-1">Ej. Caja, Jarabe, Blister</p>
                 </div>
                 <div className="md:col-span-2 flex justify-end space-x-2">
                     <button type="button" onClick={onCancel} className="bg-neutral-100 text-neutral-700 px-4 py-2 rounded text-sm hover:bg-neutral-200 border border-neutral-200">Cancelar</button>

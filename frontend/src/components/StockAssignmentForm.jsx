@@ -3,6 +3,8 @@ import { apiCatalogo } from '../services/api';
 
 const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
     const [products, setProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [form, setForm] = useState({
         productoId: '',
         stock: 0,
@@ -38,6 +40,22 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setIsDropdownOpen(true);
+        setForm({ ...form, productoId: '' }); // Clear selection if typing
+    };
+
+    const handleSelectProduct = (product) => {
+        setForm({ ...form, productoId: product.id });
+        setSearchTerm(product.nombre);
+        setIsDropdownOpen(false);
+    };
+
+    const filteredProducts = products.filter(p =>
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(null);
@@ -52,6 +70,8 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
         }
 
         // Only validate against catalog when creating new assignment
+        // REMOVED: Stock validation against catalog is no longer valid as Catalog has no stock
+        /*
         if (!editingItem) {
             const selectedProduct = products.find(p => p.id.toString() === form.productoId.toString());
             if (selectedProduct && selectedProduct.stock < form.stock) {
@@ -59,6 +79,7 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                 return;
             }
         }
+        */
 
         // Send numeric IDs as usually required
         onSave({
@@ -83,31 +104,81 @@ const StockAssignmentForm = ({ branchId, onSave, onCancel, editingItem }) => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-neutral-700 text-sm font-medium mb-2">Producto</label>
-                        <select
-                            name="productoId"
-                            value={form.productoId}
-                            onChange={handleChange}
-                            className="input-field"
-                            required
-                            disabled={!!editingItem}
-                        >
-                            <option value="">-- Seleccionar --</option>
-                            {products.map(p => (
-                                <option key={p.id} value={p.id}>
-                                    {p.nombre} (Disponibles: {p.stock})
-                                </option>
-                            ))}
-                        </select>
-                        {editingItem && (
-                            <p className="text-xs text-neutral-500 mt-1">No se puede cambiar el producto al editar</p>
+                    <div className="relative">
+                        <label className="block text-neutral-700 text-sm font-medium mb-2">Producto {editingItem && '(No editable)'}</label>
+                        {!editingItem ? (
+                            <>
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                    onFocus={() => setIsDropdownOpen(true)}
+                                    placeholder="Buscar producto..."
+                                    className="input-field w-full"
+                                />
+                                {isDropdownOpen && filteredProducts.length > 0 && (
+                                    <div className="absolute z-10 w-full bg-white border border-neutral-200 mt-1 max-h-48 overflow-y-auto shadow-lg rounded-md">
+                                        {filteredProducts.map(p => (
+                                            <div
+                                                key={p.id}
+                                                className="px-4 py-2 hover:bg-neutral-50 cursor-pointer text-sm"
+                                                onClick={() => handleSelectProduct(p)}
+                                            >
+                                                <div className="font-medium">{p.nombre}</div>
+                                                <div className="text-xs text-neutral-500">
+                                                    {p.concentracion || ''} {p.presentacion ? `(${p.presentacion})` : ''}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {form.productoId && (() => {
+                                    const selected = products.find(p => p.id === form.productoId);
+                                    if (!selected) return null;
+
+                                    // Check if product has details (for backwards compatibility)
+                                    const hasDetails = selected.concentracion || selected.presentacion;
+
+                                    return (
+                                        <div className="mt-2 p-3 bg-teal-50 border border-teal-200 rounded-md">
+                                            <div className="text-xs font-semibold text-teal-800 mb-1">✓ Producto Seleccionado:</div>
+                                            <div className="space-y-1">
+                                                <div className="text-sm font-bold text-teal-900">{selected.nombre}</div>
+                                                {selected.concentracion && (
+                                                    <div className="text-xs text-teal-700"><span className="font-medium">Concentración:</span> {selected.concentracion}</div>
+                                                )}
+                                                {selected.presentacion && (
+                                                    <div className="text-xs text-teal-700"><span className="font-medium">Presentación:</span> {selected.presentacion}</div>
+                                                )}
+                                                {!hasDetails && (
+                                                    <div className="text-xs text-teal-600 italic">Producto sin detalles adicionales</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+                            </>
+                        ) : (
+                            <input
+                                type="text"
+                                value={products.find(p => p.id === form.productoId)?.nombre || 'Cargando...'}
+                                disabled
+                                className="input-field bg-neutral-100 text-neutral-500"
+                            />
                         )}
                     </div>
 
                     <div>
                         <label className="block text-neutral-700 text-sm font-medium mb-2">
                             {editingItem ? 'Cantidad a Agregar al Stock Actual' : 'Cantidad a Asignar'}
+                            {form.productoId && (() => {
+                                const selected = products.find(p => p.id === form.productoId);
+                                return selected?.presentacion ? (
+                                    <span className="text-xs font-normal text-teal-600 ml-1">
+                                        (en unidades de {selected.presentacion})
+                                    </span>
+                                ) : null;
+                            })()}
                         </label>
                         <input
                             type="number"

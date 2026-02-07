@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +43,13 @@ public class InventarioServiceImpl implements InventarioService {
         return repository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InventarioDTO> findAll(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(this::convertToDTO);
     }
 
     @Override
@@ -100,38 +110,13 @@ public class InventarioServiceImpl implements InventarioService {
             throw new RuntimeException("El producto ya existe en esta sucursal");
         }
 
-        // GLOBAL STOCK VALIDATION
-        MedicamentoDTO medicamento = null;
-        int stockGlobalAnterior = 0;
-        try {
-            Long prodId = Long.parseLong(createDTO.getProductoID());
-            medicamento = catalogoClient.findById(prodId);
-            stockGlobalAnterior = medicamento.getStock();
-
-            if (medicamento.getStock() < createDTO.getStock()) {
-                throw new RuntimeException(
-                        String.format("Stock insuficiente en Catálogo General. Disponible: %d, Solicitado: %d",
-                                medicamento.getStock(), createDTO.getStock()));
-            }
-
-            // Deduct from Global (Catalogo)
-            medicamento.setStock(medicamento.getStock() - createDTO.getStock());
-            catalogoClient.update(prodId, medicamento);
-
-        } catch (NumberFormatException e) {
-            log.warn("ID de producto no numerico, saltando validacion global: {}", createDTO.getProductoID());
-        } catch (Exception e) {
-            log.error("Error técnico validando stock en catálogo: {}", e.getMessage(), e);
-            throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
-        }
-
         // Create inventory entity
         Inventario entity = new Inventario();
         entity.setSucursalID(createDTO.getSucursalID());
         entity.setProductoID(createDTO.getProductoID());
         entity.setStock(createDTO.getStock());
         entity.setStockMinimo(createDTO.getStockMinimo());
-        
+
         Inventario savedEntity = repository.save(entity);
 
         // REGISTER TRANSACTION IN HISTORY
@@ -143,12 +128,8 @@ public class InventarioServiceImpl implements InventarioService {
         movimiento.setInventarioId(savedEntity.getId());
         movimiento.setStockAnterior(0);
         movimiento.setStockNuevo(createDTO.getStock());
-        if (medicamento != null) {
-            movimiento.setStockGlobalAnterior(stockGlobalAnterior);
-            movimiento.setStockGlobalNuevo(medicamento.getStock());
-        }
         movimiento.setObservaciones("Asignación inicial de stock a sucursal");
-        
+
         movimientoRepository.save(movimiento);
 
         return convertToDTO(savedEntity);
@@ -161,70 +142,31 @@ public class InventarioServiceImpl implements InventarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Inventario no encontrado con id: " + id));
 
         int stockAnterior = entity.getStock();
-        MedicamentoDTO medicamento = null;
-        int stockGlobalAnterior = 0;
 
-        // CRITICAL: Si se está cambiando el stock, NO MODIFICAR directamente
-        // En su lugar, calcular la diferencia y crear una nueva transacción
+        // Si se está cambiando el stock, registrar movimiento
         if (updateDTO.getStock() != null && !updateDTO.getStock().equals(stockAnterior)) {
             int diferencia = updateDTO.getStock() - stockAnterior;
-            
-            // Si diferencia es positiva: se está asignando más (debe validar stock global)
-            // Si diferencia es negativa: se está devolviendo al catálogo
-            
-            try {
-                Long prodId = Long.parseLong(entity.getProductoID());
-                medicamento = catalogoClient.findById(prodId);
-                stockGlobalAnterior = medicamento.getStock();
-
-                if (diferencia > 0) {
-                    // ASIGNACIÓN ADICIONAL: validar que haya stock disponible
-                    if (medicamento.getStock() < diferencia) {
-                        throw new RuntimeException(
-                                String.format("Stock insuficiente en Catálogo General. Disponible: %d, Requerido: %d",
-                                        medicamento.getStock(), diferencia));
-                    }
-                    // Deducir del catálogo
-                    medicamento.setStock(medicamento.getStock() - diferencia);
-                    catalogoClient.update(prodId, medicamento);
-                    
-                } else if (diferencia < 0) {
-                    // DEVOLUCIÓN: regresar al catálogo
-                    medicamento.setStock(medicamento.getStock() + Math.abs(diferencia));
-                    catalogoClient.update(prodId, medicamento);
-                }
-
-            } catch (NumberFormatException e) {
-                log.warn("ID de producto no numerico, saltando validacion global: {}", entity.getProductoID());
-            } catch (Exception e) {
-                log.error("Error técnico validando stock en catálogo: {}", e.getMessage(), e);
-                throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
-            }
 
             // REGISTER TRANSACTION IN HISTORY
             InventarioMovimiento movimiento = new InventarioMovimiento();
             movimiento.setSucursalId(entity.getSucursalID());
             movimiento.setProductoId(entity.getProductoID());
             movimiento.setCantidad(diferencia);
-            movimiento.setTipoMovimiento(diferencia > 0 ? TipoMovimiento.ASIGNACION_ADICIONAL : TipoMovimiento.DEVOLUCION);
+            movimiento.setTipoMovimiento(
+                    diferencia > 0 ? TipoMovimiento.ASIGNACION_ADICIONAL : TipoMovimiento.DEVOLUCION);
             movimiento.setInventarioId(entity.getId());
             movimiento.setStockAnterior(stockAnterior);
             movimiento.setStockNuevo(updateDTO.getStock());
-            if (medicamento != null) {
-                movimiento.setStockGlobalAnterior(stockGlobalAnterior);
-                movimiento.setStockGlobalNuevo(medicamento.getStock());
-            }
-            movimiento.setObservaciones(diferencia > 0 ? 
-                "Asignación adicional de stock" : 
-                "Devolución de stock al catálogo general");
-            
+            movimiento.setObservaciones(
+                    diferencia > 0 ? "Asignación adicional de stock" : "Devolución de stock (Ajuste manual)");
+
             movimientoRepository.save(movimiento);
 
             // Actualizar el stock en la entidad
             entity.setStock(updateDTO.getStock());
         }
 
-        // Actualizar stock mínimo (esto sí puede modificarse directamente)
+        // Actualizar stock mínimo
         if (updateDTO.getStockMinimo() != null) {
             entity.setStockMinimo(updateDTO.getStockMinimo());
         }
@@ -239,37 +181,12 @@ public class InventarioServiceImpl implements InventarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Inventario no encontrado con id: " + id));
 
         int stockAnterior = entity.getStock();
-        MedicamentoDTO medicamento = null;
-        int stockGlobalAnterior = 0;
-
-        // Solo ajustes positivos deben validar stock global
-        if (adjustment > 0) {
-            try {
-                Long prodId = Long.parseLong(entity.getProductoID());
-                medicamento = catalogoClient.findById(prodId);
-                stockGlobalAnterior = medicamento.getStock();
-
-                if (medicamento.getStock() < adjustment) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Stock insuficiente en Catálogo General para el incremento. Disponible: %d, Solicitado: %d",
-                                    medicamento.getStock(), adjustment));
-                }
-
-                // Deduct from Global
-                medicamento.setStock(medicamento.getStock() - adjustment);
-                catalogoClient.update(prodId, medicamento);
-
-            } catch (Exception e) {
-                log.error("Error técnico validando stock en catálogo durante ajuste: {}", e.getMessage(), e);
-                throw new RuntimeException("No fue posible verificar la disponibilidad en el catálogo. Intente nuevamente más tarde.");
-            }
-        }
 
         // Validar que el stock no quede negativo
         int newStock = entity.getStock() + adjustment;
         if (newStock < 0) {
-            throw new RuntimeException("Stock insuficiente para realizar el ajuste. Stock actual: " + entity.getStock() + ", Ajuste solicitado: " + adjustment);
+            throw new RuntimeException("Stock insuficiente para realizar el ajuste. Stock actual: " + entity.getStock()
+                    + ", Ajuste solicitado: " + adjustment);
         }
 
         // REGISTER TRANSACTION IN HISTORY
@@ -281,12 +198,8 @@ public class InventarioServiceImpl implements InventarioService {
         movimiento.setInventarioId(entity.getId());
         movimiento.setStockAnterior(stockAnterior);
         movimiento.setStockNuevo(newStock);
-        if (medicamento != null) {
-            movimiento.setStockGlobalAnterior(stockGlobalAnterior);
-            movimiento.setStockGlobalNuevo(medicamento.getStock());
-        }
         movimiento.setObservaciones("Ajuste de inventario: " + (adjustment > 0 ? "+" : "") + adjustment);
-        
+
         movimientoRepository.save(movimiento);
 
         entity.setStock(newStock);

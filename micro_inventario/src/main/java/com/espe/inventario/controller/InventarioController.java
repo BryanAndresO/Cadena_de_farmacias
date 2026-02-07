@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/inventario")
 public class InventarioController {
@@ -28,6 +32,17 @@ public class InventarioController {
     public ResponseEntity<List<InventarioDTO>> findAll() {
         List<InventarioDTO> inventarios = service.findAll();
         return ResponseEntity.ok(inventarios);
+    }
+
+    /**
+     * GET /api/inventario/pagina - Get all inventory records with pagination
+     */
+    @GetMapping("/pagina")
+    public ResponseEntity<Page<InventarioDTO>> findAllPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     /**
@@ -112,7 +127,7 @@ public class InventarioController {
     /**
      * PATCH /api/inventario/{id}/adjust - Adjust stock
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PatchMapping("/{id}/adjust")
     public ResponseEntity<InventarioDTO> adjustStock(
             @PathVariable Long id,

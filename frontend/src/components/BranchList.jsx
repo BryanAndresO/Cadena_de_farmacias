@@ -19,8 +19,8 @@ const BranchList = () => {
     // Stock Assignment State
     const [showStockForm, setShowStockForm] = useState(false);
 
-    // Product names cache
-    const [productNames, setProductNames] = useState({});
+    // Product details cache (full objects, not just names)
+    const [productDetails, setProductDetails] = useState({});
     const [editingInventory, setEditingInventory] = useState(null);
 
     useEffect(() => {
@@ -31,9 +31,9 @@ const BranchList = () => {
     const fetchProducts = async () => {
         try {
             const response = await apiCatalogo.get('/medicamentos');
-            const names = {};
-            response.data.forEach(p => { names[p.id] = p.nombre; });
-            setProductNames(names);
+            const details = {};
+            response.data.forEach(p => { details[p.id] = p; });
+            setProductDetails(details);
         } catch (err) {
             console.error('Error loading products:', err);
         }
@@ -243,7 +243,20 @@ const BranchList = () => {
                                     <tbody className="divide-y divide-neutral-100">
                                         {inventory.length > 0 ? inventory.map(item => (
                                             <tr key={item.id} className="hover:bg-neutral-50">
-                                                <td className="p-3 text-neutral-700 text-sm font-medium">{productNames[item.productoId] || `Producto #${item.productoId}`}</td>
+                                                <td className="p-3 text-neutral-700 text-sm">
+                                                    {(() => {
+                                                        const product = productDetails[item.productoId];
+                                                        if (!product) return `Producto #${item.productoId}`;
+                                                        return (
+                                                            <div>
+                                                                <div className="font-medium">{product.nombre}</div>
+                                                                <div className="text-xs text-neutral-500">
+                                                                    {product.concentracion || ''} {product.presentacion ? `(${product.presentacion})` : ''}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </td>
                                                 <td className="p-3 font-mono font-medium text-neutral-800 text-sm">{item.cantidad}</td>
                                                 <td className="p-3 text-neutral-600 text-sm">{item.stockMinimo || 0}</td>
                                                 <td className="p-3">

@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class MedicamentoServiceImpl implements MedicamentoService {
 
@@ -23,6 +26,13 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         return repository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MedicamentoDTO> buscarTodos(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(this::convertToDTO);
     }
 
     @Override
@@ -52,7 +62,8 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         dto.setDescripcion(entity.getDescripcion());
         dto.setLaboratorio(entity.getLaboratorio());
         dto.setPrecio(entity.getPrecio());
-        dto.setStock(entity.getStock());
+        dto.setConcentracion(entity.getConcentracion());
+        dto.setPresentacion(entity.getPresentacion());
         return dto;
     }
 
@@ -63,7 +74,8 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         entity.setDescripcion(dto.getDescripcion());
         entity.setLaboratorio(dto.getLaboratorio());
         entity.setPrecio(dto.getPrecio());
-        entity.setStock(dto.getStock());
+        entity.setConcentracion(dto.getConcentracion());
+        entity.setPresentacion(dto.getPresentacion());
         return entity;
     }
 }

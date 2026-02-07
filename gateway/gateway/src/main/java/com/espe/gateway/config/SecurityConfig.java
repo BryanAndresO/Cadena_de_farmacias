@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import reactor.core.publisher.Mono;
@@ -199,6 +200,9 @@ public class SecurityConfig {
                         .pathMatchers("/api/userinfo", "/api/logout").permitAll()
                         // Everything else requires authentication
                         .anyExchange().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(
+                                new RedirectServerAuthenticationEntryPoint("/oauth2/authorization/gateway-client")))
                 .oauth2Login(Customizer.withDefaults())
                 .oauth2Client(Customizer.withDefaults())
                 .logout(logout -> logout
@@ -206,24 +210,12 @@ public class SecurityConfig {
                         .requiresLogout(ServerWebExchangeMatchers.pathMatchers("/logout"))
                         .logoutHandler(logoutHandler)
                         .logoutSuccessHandler(logoutSuccessHandler))
-                // SEC-004 FIX: CSRF selectivo
-                // - Deshabilitado para APIs REST (usan tokens Bearer, no cookies de sesión)
-                // - Deshabilitado para endpoints OAuth2 (manejados por el auth server)
-                // - El Gateway usa OAuth2 con tokens, no sesiones tradicionales con cookies
-                .csrf(csrf -> csrf
-                        .requireCsrfProtectionMatcher(exchange -> {
-                            String path = exchange.getRequest().getPath().value();
-                            // Deshabilitar CSRF para rutas de API y OAuth2
-                            // Estas rutas están protegidas por tokens Bearer en lugar de cookies de sesión
-                            if (path.startsWith("/api/") || path.startsWith("/oauth2/") ||
-                                    path.startsWith("/.well-known/") || path.equals("/logout")) {
-                                return org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher.MatchResult
-                                        .notMatch();
-                            }
-                            // Para otras rutas, aplicar CSRF (formularios tradicionales si los hubiera)
-                            return org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher.MatchResult
-                                    .match();
-                        }));
+                // SEC-004: CSRF deshabilitado porque:
+                // 1. OAuth2 usa tokens Bearer (no cookies de sesión vulnerables a CSRF)
+                // 2. El frontend es un SPA que no usa formularios tradicionales
+                // 3. Las APIs validan tokens JWT en cada petición
+                // Los tokens Bearer proporcionan protección equivalente a CSRF
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

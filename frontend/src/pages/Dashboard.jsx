@@ -14,7 +14,7 @@ const DashboardCard = ({ title, value, icon, color, accent }) => (
             <span className={`${accent} flex items-center gap-0.5`}>
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
                 12%
-            </span> 
+            </span>
             <span className="text-slate-400 font-normal">vs mes anterior</span>
         </div>
     </div>
@@ -54,7 +54,9 @@ const Dashboard = () => {
                 const totalSales = salesRes.data.reduce((acc, curr) => acc + curr.total, 0);
                 const totalProducts = productsRes.data.length;
                 const totalClients = clientsRes.data.length;
-                const lowStockAlerts = productsRes.data.filter(p => p.stock < 10).length;
+                // TODO: Migrate to Inventario API for low stock alerts
+                // const lowStockAlerts = productsRes.data.filter(p => p.stock < 10).length;
+                const lowStockAlerts = 0; // Temporarily disabled until Inventario API integration
 
                 setStats({
                     sales: totalSales,
