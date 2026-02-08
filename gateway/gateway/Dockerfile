@@ -7,4 +7,6 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
 COPY --from=build /app/target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Cloud Run requiere que el servicio escuche en el puerto definido por la variable PORT
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app.jar"]
+

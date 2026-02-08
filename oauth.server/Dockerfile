@@ -19,5 +19,6 @@ COPY src src
 RUN ./mvnw package -DskipTests
 
 # Run the application
-EXPOSE 9000
-ENTRYPOINT ["java", "-jar", "target/oauth-server-0.0.1-SNAPSHOT.jar"]
+# Cloud Run requiere que el servicio escuche en el puerto definido por la variable PORT
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-9000} -jar target/oauth-server-0.0.1-SNAPSHOT.jar"]
+
